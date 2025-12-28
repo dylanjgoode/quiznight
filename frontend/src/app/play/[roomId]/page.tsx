@@ -1,20 +1,22 @@
+'use client';
+
 import { useState, useCallback, useEffect } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { WS_URL } from '../config';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { useSounds } from '../hooks/useSounds';
-import type { Player, WebSocketMessage, PlayerInitMessage } from '../types';
-import Leaderboard from '../components/Leaderboard';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { WS_URL } from '@/lib/config';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { useSounds } from '@/hooks/useSounds';
+import type { Player, WebSocketMessage, PlayerInitMessage } from '@/lib/types';
+import Leaderboard from '@/components/Leaderboard';
 import confetti from 'canvas-confetti';
 
 export default function PlayerGame() {
-  const { roomId } = useParams<{ roomId: string }>();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const roomId = params.roomId as string;
   const playerName = searchParams.get('name') || '';
   const { playSound } = useSounds();
 
-  // Player state
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [position, setPosition] = useState(0);
@@ -27,21 +29,18 @@ export default function PlayerGame() {
   const [awardedPlayer, setAwardedPlayer] = useState<string | null>(null);
   const [pointsReceived, setPointsReceived] = useState<number | null>(null);
 
-  // Haptic feedback
   const triggerHaptic = () => {
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
     }
   };
 
-  // Handle WebSocket messages
   const handleMessage = useCallback(
     (data: unknown) => {
       const message = data as WebSocketMessage;
 
       switch (message.type) {
         case 'init':
-          // Type guard for player init message
           if ('player_id' in message) {
             const playerInit = message as PlayerInitMessage;
             setPlayerId(playerInit.player_id);
@@ -51,7 +50,6 @@ export default function PlayerGame() {
             setPlayers(playerInit.leaderboard);
           }
           break;
-
         case 'buzzer_active':
           setBuzzerActive(true);
           setHasBuzzed(false);
@@ -59,26 +57,21 @@ export default function PlayerGame() {
           playSound('start');
           triggerHaptic();
           break;
-
         case 'buzzer_locked':
           setBuzzerActive(false);
           break;
-
         case 'timer_tick':
           setTimerRemaining(message.remaining);
           break;
-
         case 'timer_expired':
           setBuzzerActive(false);
           break;
-
         case 'buzz_confirmed':
           setBuzzPosition(message.position);
           setHasBuzzed(true);
           playSound('buzzer');
           triggerHaptic();
           break;
-
         case 'leaderboard_update':
           setPlayers(message.leaderboard);
           const myPlayer = message.leaderboard.find((p: Player) => p.id === playerId);
@@ -106,19 +99,17 @@ export default function PlayerGame() {
             setTimeout(() => setAwardedPlayer(null), 2000);
           }
           break;
-
         case 'question_cleared':
           setBuzzerActive(false);
           setHasBuzzed(false);
           setBuzzPosition(null);
           break;
-
         case 'kicked':
-          navigate('/');
+          router.push('/');
           break;
       }
     },
-    [playerId, playSound, navigate]
+    [playerId, playSound, router]
   );
 
   const { isConnected, sendMessage, reconnectCount } = useWebSocket(
@@ -126,13 +117,12 @@ export default function PlayerGame() {
     { onMessage: handleMessage }
   );
 
-  const buzz = () => {
+  const buzz = useCallback(() => {
     if (buzzerActive && !hasBuzzed) {
       sendMessage({ type: 'buzz' });
     }
-  };
+  }, [buzzerActive, hasBuzzed, sendMessage]);
 
-  // Keyboard support for buzzer
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && buzzerActive && !hasBuzzed) {
@@ -142,10 +132,10 @@ export default function PlayerGame() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [buzzerActive, hasBuzzed]);
+  }, [buzzerActive, hasBuzzed, buzz]);
 
   if (!playerName) {
-    navigate(`/join/${roomId}`);
+    router.push(`/join/${roomId}`);
     return null;
   }
 
@@ -153,10 +143,10 @@ export default function PlayerGame() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-center">
-          <div className="text-nye-gold text-xl mb-4">
+          <div className="text-[#FFD700] text-xl mb-4">
             {reconnectCount > 0 ? 'Reconnecting...' : 'Connecting to game...'}
           </div>
-          <div className="animate-spin w-8 h-8 border-4 border-nye-gold border-t-transparent rounded-full mx-auto"></div>
+          <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full mx-auto"></div>
           {reconnectCount > 0 && (
             <p className="text-gray-500 text-sm mt-4">Attempt {reconnectCount}/5</p>
           )}
@@ -167,41 +157,35 @@ export default function PlayerGame() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="p-4 bg-nye-dark/80 border-b border-nye-gold/30">
+      <div className="p-4 bg-[#1A1A1A]/80 border-b border-[#FFD700]/30">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-nye-gold">{playerName}</h1>
+            <h1 className="text-xl font-bold text-[#FFD700]">{playerName}</h1>
             <p className="text-gray-400 text-sm">Position #{position}</p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-nye-gold">{score}</div>
+            <div className="text-3xl font-bold text-[#FFD700]">{score}</div>
             <p className="text-gray-400 text-sm">points</p>
           </div>
         </div>
       </div>
 
-      {/* Points notification */}
       {pointsReceived !== null && (
         <div
           className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-full font-bold text-2xl animate-bounce ${
-            pointsReceived > 0
-              ? 'bg-green-500 text-white'
-              : 'bg-red-500 text-white'
+            pointsReceived > 0 ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
           }`}
         >
           {pointsReceived > 0 ? '+' : ''}{pointsReceived} points!
         </div>
       )}
 
-      {/* Main Buzzer Area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">
-        {/* Timer display */}
         {buzzerActive && (
           <div className="mb-8">
             <div
               className={`text-6xl font-bold font-mono ${
-                timerRemaining <= 3 ? 'text-red-500 animate-pulse' : 'text-nye-gold'
+                timerRemaining <= 3 ? 'text-red-500 animate-pulse' : 'text-[#FFD700]'
               }`}
             >
               {timerRemaining}
@@ -209,13 +193,12 @@ export default function PlayerGame() {
           </div>
         )}
 
-        {/* Buzzer Button */}
         <button
           onClick={buzz}
           disabled={!buzzerActive || hasBuzzed}
           className={`w-64 h-64 md:w-80 md:h-80 rounded-full font-bold text-3xl transition-all transform ${
             buzzerActive && !hasBuzzed
-              ? 'bg-gradient-to-br from-nye-gold to-nye-gold-dark text-nye-black active:scale-95 buzzer-active shadow-2xl'
+              ? 'bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] active:scale-95 buzzer-active shadow-2xl'
               : hasBuzzed
               ? buzzPosition === 1
                 ? 'bg-green-500 text-white'
@@ -245,7 +228,6 @@ export default function PlayerGame() {
           )}
         </button>
 
-        {/* Instructions */}
         <p className="mt-8 text-gray-400 text-center">
           {buzzerActive && !hasBuzzed
             ? 'Tap the button or press SPACE to buzz!'
@@ -255,22 +237,20 @@ export default function PlayerGame() {
         </p>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="p-4 bg-nye-dark/80 border-t border-nye-gold/30">
+      <div className="p-4 bg-[#1A1A1A]/80 border-t border-[#FFD700]/30">
         <button
           onClick={() => setShowLeaderboard(!showLeaderboard)}
-          className="w-full py-3 bg-nye-black border border-nye-gold/30 text-nye-gold rounded-lg"
+          className="w-full py-3 bg-[#0A0A0A] border border-[#FFD700]/30 text-[#FFD700] rounded-lg"
         >
           {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
         </button>
       </div>
 
-      {/* Leaderboard Modal */}
       {showLeaderboard && (
         <div className="fixed inset-0 bg-black/80 z-40 flex items-end">
-          <div className="w-full max-h-[70vh] overflow-y-auto bg-nye-dark rounded-t-2xl p-4 animate-slide-up">
+          <div className="w-full max-h-[70vh] overflow-y-auto bg-[#1A1A1A] rounded-t-2xl p-4 animate-slide-up">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-nye-gold">Leaderboard</h2>
+              <h2 className="text-xl font-bold text-[#FFD700]">Leaderboard</h2>
               <button
                 onClick={() => setShowLeaderboard(false)}
                 className="text-gray-400 hover:text-white"
@@ -287,7 +267,6 @@ export default function PlayerGame() {
         </div>
       )}
 
-      {/* Connection status */}
       <div
         className={`fixed bottom-4 right-4 w-3 h-3 rounded-full ${
           isConnected ? 'bg-green-500' : 'bg-red-500'

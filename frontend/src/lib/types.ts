@@ -21,35 +21,26 @@ export interface BuzzEntry {
   position: number;
 }
 
-export interface GameState {
-  roomId: string;
-  roomCode: string;
-  isHost: boolean;
-  connected: boolean;
+// Host init message
+export type HostInitMessage = {
+  type: 'init';
+  room_id: string;
+  room_code: string;
   players: Player[];
-  currentQuestion: Question | null;
-  buzzerActive: boolean;
-  buzzerQueue: BuzzEntry[];
-  timerSeconds: number;
-  timerRemaining: number;
   categories: string[];
-  currentCategory: string | null;
-}
+  timer_seconds: number;
+};
 
-export interface PlayerState {
-  playerId: string;
+// Player init message
+export type PlayerInitMessage = {
+  type: 'init';
+  player_id: string;
   name: string;
   score: number;
   position: number;
-  buzzPosition: number | null;
-  hasBuzzed: boolean;
-}
-
-// Host init message
-export type HostInitMessage = { type: 'init'; room_id: string; room_code: string; players: Player[]; categories: string[]; timer_seconds: number };
-
-// Player init message
-export type PlayerInitMessage = { type: 'init'; player_id: string; name: string; score: number; position: number; buzzer_active: boolean; leaderboard: Player[] };
+  buzzer_active: boolean;
+  leaderboard: Player[];
+};
 
 export type WebSocketMessage =
   | HostInitMessage

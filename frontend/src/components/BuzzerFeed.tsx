@@ -1,4 +1,6 @@
-import type { BuzzEntry, Question } from '../types';
+'use client';
+
+import type { BuzzEntry, Question } from '@/lib/types';
 
 interface BuzzerFeedProps {
   buzzerQueue: BuzzEntry[];
@@ -22,8 +24,8 @@ export default function BuzzerFeed({
   const points = currentQuestion.points || 100;
 
   return (
-    <div className="bg-nye-dark/80 rounded-xl p-6 border border-nye-gold/30">
-      <h2 className="text-xl font-semibold text-nye-gold mb-4 flex items-center gap-2">
+    <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
+      <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
         <span>🔔</span> Buzzer Feed
       </h2>
 
@@ -40,23 +42,23 @@ export default function BuzzerFeed({
                 key={`${buzz.player_id}-${buzz.timestamp}`}
                 className={`flex items-center justify-between p-4 rounded-lg transition-all ${
                   isFirst
-                    ? 'bg-nye-gold/20 border-2 border-nye-gold'
-                    : 'bg-nye-black/50 border border-gray-700'
+                    ? 'bg-[#FFD700]/20 border-2 border-[#FFD700]'
+                    : 'bg-[#0A0A0A]/50 border border-gray-700'
                 } ${wasAwarded ? 'ring-2 ring-green-500' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <span
                     className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${
-                      isFirst ? 'bg-nye-gold text-nye-black' : 'bg-gray-700 text-gray-300'
+                      isFirst ? 'bg-[#FFD700] text-[#0A0A0A]' : 'bg-gray-700 text-gray-300'
                     }`}
                   >
                     {buzz.position}
                   </span>
                   <div>
-                    <span className={`font-medium ${isFirst ? 'text-nye-gold text-lg' : 'text-white'}`}>
+                    <span className={`font-medium ${isFirst ? 'text-[#FFD700] text-lg' : 'text-white'}`}>
                       {buzz.name}
                     </span>
-                    {isFirst && <span className="ml-2 text-nye-gold-light text-sm">First!</span>}
+                    {isFirst && <span className="ml-2 text-[#FFEC8B] text-sm">First!</span>}
                   </div>
                 </div>
 

@@ -1,11 +1,14 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { API_URL } from '../config';
-import Sparkles from '../components/Sparkles';
+import { useParams, useRouter } from 'next/navigation';
+import { API_URL } from '@/lib/config';
+import Sparkles from '@/components/Sparkles';
 
 export default function JoinGame() {
-  const { roomId } = useParams<{ roomId: string }>();
-  const navigate = useNavigate();
+  const params = useParams();
+  const roomId = params.roomId as string;
+  const router = useRouter();
   const [playerName, setPlayerName] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState('');
@@ -13,12 +16,10 @@ export default function JoinGame() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if room exists
     const checkRoom = async () => {
       if (!roomId) return;
 
       try {
-        // Try to find room by code - the backend stores room_id, and code is first 6 chars
         const response = await fetch(`${API_URL}/api/rooms/${roomId}`);
         if (response.ok) {
           const data = await response.json();
@@ -44,13 +45,13 @@ export default function JoinGame() {
     }
 
     setIsJoining(true);
-    navigate(`/play/${roomId}?name=${encodeURIComponent(playerName.trim())}`);
+    router.push(`/play/${roomId}?name=${encodeURIComponent(playerName.trim())}`);
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-nye-gold text-xl">Looking for room...</div>
+        <div className="text-[#FFD700] text-xl">Looking for room...</div>
       </div>
     );
   }
@@ -59,15 +60,15 @@ export default function JoinGame() {
     <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <Sparkles />
 
-      <div className="w-full max-w-md bg-nye-dark/80 backdrop-blur-sm rounded-2xl p-8 border border-nye-gold/30 shadow-lg relative z-10">
-        <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-nye-gold to-nye-gold-light bg-clip-text text-transparent">
+      <div className="w-full max-w-md bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-8 border border-[#FFD700]/30 shadow-lg relative z-10">
+        <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-[#FFD700] to-[#FFEC8B] bg-clip-text text-transparent">
           Join Quiz Night
         </h1>
 
         {roomInfo && (
           <div className="text-center mb-6">
             <p className="text-gray-400">
-              Hosted by <span className="text-nye-gold">{roomInfo.host_name}</span>
+              Hosted by <span className="text-[#FFD700]">{roomInfo.host_name}</span>
             </p>
             <p className="text-gray-500 text-sm">
               {roomInfo.player_count} player{roomInfo.player_count !== 1 ? 's' : ''} joined
@@ -84,7 +85,7 @@ export default function JoinGame() {
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && joinGame()}
-              className="w-full px-4 py-3 rounded-lg bg-nye-black border border-nye-gold/30 text-white placeholder-gray-500 text-lg"
+              className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 text-lg"
               maxLength={20}
               autoFocus
             />
@@ -104,8 +105,8 @@ export default function JoinGame() {
         )}
 
         <button
-          onClick={() => navigate('/')}
-          className="mt-6 w-full text-gray-400 hover:text-nye-gold transition-colors text-sm"
+          onClick={() => router.push('/')}
+          className="mt-6 w-full text-gray-400 hover:text-[#FFD700] transition-colors text-sm"
         >
           ← Back to Home
         </button>

@@ -1,13 +1,15 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { WS_URL, API_URL } from '../config';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { useSounds } from '../hooks/useSounds';
-import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage } from '../types';
-import Leaderboard from '../components/Leaderboard';
-import BuzzerFeed from '../components/BuzzerFeed';
-import Timer from '../components/Timer';
-import QuestionCard from '../components/QuestionCard';
+import { useParams } from 'next/navigation';
+import { WS_URL, API_URL } from '@/lib/config';
+import { useWebSocket } from '@/hooks/useWebSocket';
+import { useSounds } from '@/hooks/useSounds';
+import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage } from '@/lib/types';
+import Leaderboard from '@/components/Leaderboard';
+import BuzzerFeed from '@/components/BuzzerFeed';
+import Timer from '@/components/Timer';
+import QuestionCard from '@/components/QuestionCard';
 import confetti from 'canvas-confetti';
 
 interface QuestionsData {
@@ -15,10 +17,10 @@ interface QuestionsData {
 }
 
 export default function HostGame() {
-  const { roomId } = useParams<{ roomId: string }>();
+  const params = useParams();
+  const roomId = params.roomId as string;
   const { playSound } = useSounds();
 
-  // Game state
   const [roomCode, setRoomCode] = useState('');
   const [players, setPlayers] = useState<Player[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -33,7 +35,6 @@ export default function HostGame() {
   const [answerRevealed, setAnswerRevealed] = useState(false);
   const [awardedPlayer, setAwardedPlayer] = useState<string | null>(null);
 
-  // Load questions
   useEffect(() => {
     fetch(`${API_URL}/api/questions`)
       .then((res) => res.json())
@@ -41,14 +42,12 @@ export default function HostGame() {
       .catch(console.error);
   }, []);
 
-  // Handle WebSocket messages
   const handleMessage = useCallback(
     (data: unknown) => {
       const message = data as WebSocketMessage;
 
       switch (message.type) {
         case 'init':
-          // Type guard for host init message
           if ('room_code' in message) {
             const hostInit = message as HostInitMessage;
             setRoomCode(hostInit.room_code);
@@ -57,37 +56,28 @@ export default function HostGame() {
             setTimerSeconds(hostInit.timer_seconds);
           }
           break;
-
         case 'player_joined':
           setPlayers(message.leaderboard);
           playSound('start');
           break;
-
         case 'player_disconnected':
-          setPlayers(message.leaderboard);
-          break;
-
         case 'player_left':
           setPlayers(message.leaderboard);
           break;
-
         case 'player_buzzed':
           setBuzzerQueue(message.buzzer_queue);
           playSound('buzzer');
           break;
-
         case 'timer_tick':
           setTimerRemaining(message.remaining);
           if (message.remaining <= 3 && message.remaining > 0) {
             playSound('tick');
           }
           break;
-
         case 'timer_expired':
           setBuzzerActive(false);
           setBuzzerQueue(message.buzzer_queue);
           break;
-
         case 'leaderboard_update':
           setPlayers(message.leaderboard);
           if (message.awarded_player && message.points && message.points > 0) {
@@ -104,11 +94,9 @@ export default function HostGame() {
             playSound('wrong');
           }
           break;
-
         case 'answer_revealed':
           setAnswerRevealed(true);
           break;
-
         case 'question_cleared':
           setCurrentQuestion(null);
           setBuzzerQueue([]);
@@ -125,7 +113,6 @@ export default function HostGame() {
     { onMessage: handleMessage }
   );
 
-  // Actions
   const selectCategory = (category: string) => {
     setCurrentCategory(category);
     setQuestionIndex(0);
@@ -186,8 +173,8 @@ export default function HostGame() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-nye-gold text-xl mb-4">Connecting to game...</div>
-          <div className="animate-spin w-8 h-8 border-4 border-nye-gold border-t-transparent rounded-full mx-auto"></div>
+          <div className="text-[#FFD700] text-xl mb-4">Connecting to game...</div>
+          <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full mx-auto"></div>
         </div>
       </div>
     );
@@ -198,17 +185,16 @@ export default function HostGame() {
 
   return (
     <div className="min-h-screen p-4 lg:p-6">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-nye-gold">Quiz Night Host</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-[#FFD700]">Quiz Night Host</h1>
           <div className="flex items-center gap-4 mt-2">
             <span className="text-gray-400">
-              Room Code: <span className="text-nye-gold font-mono font-bold text-xl">{roomCode}</span>
+              Room Code: <span className="text-[#FFD700] font-mono font-bold text-xl">{roomCode}</span>
             </span>
             <button
               onClick={copyJoinLink}
-              className="text-sm bg-nye-dark border border-nye-gold/30 text-nye-gold px-3 py-1 rounded hover:bg-nye-gold hover:text-nye-black transition-colors"
+              className="text-sm bg-[#1A1A1A] border border-[#FFD700]/30 text-[#FFD700] px-3 py-1 rounded hover:bg-[#FFD700] hover:text-[#0A0A0A] transition-colors"
             >
               Copy Link
             </button>
@@ -220,7 +206,7 @@ export default function HostGame() {
             <select
               value={timerSeconds}
               onChange={(e) => updateTimer(Number(e.target.value))}
-              className="bg-nye-dark border border-nye-gold/30 text-white px-3 py-1 rounded"
+              className="bg-[#1A1A1A] border border-[#FFD700]/30 text-white px-3 py-1 rounded"
             >
               <option value={10}>10s</option>
               <option value={15}>15s</option>
@@ -235,12 +221,10 @@ export default function HostGame() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-3 space-y-6">
-          {/* Category Selection */}
           {!currentQuestion && (
-            <div className="bg-nye-dark/80 rounded-xl p-6 border border-nye-gold/30">
-              <h2 className="text-xl font-semibold text-nye-gold mb-4">
+            <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
+              <h2 className="text-xl font-semibold text-[#FFD700] mb-4">
                 {currentCategory ? `${currentCategory} - Question ${questionIndex + 1}/${categoryQuestions.length}` : 'Select Category'}
               </h2>
               <div className="flex flex-wrap gap-3 mb-6">
@@ -250,8 +234,8 @@ export default function HostGame() {
                     onClick={() => selectCategory(cat)}
                     className={`px-4 py-2 rounded-lg transition-all ${
                       currentCategory === cat
-                        ? 'bg-nye-gold text-nye-black'
-                        : 'bg-nye-black border border-nye-gold/30 text-white hover:border-nye-gold'
+                        ? 'bg-[#FFD700] text-[#0A0A0A]'
+                        : 'bg-[#0A0A0A] border border-[#FFD700]/30 text-white hover:border-[#FFD700]'
                     }`}
                   >
                     {cat}
@@ -269,7 +253,6 @@ export default function HostGame() {
             </div>
           )}
 
-          {/* Current Question */}
           {currentQuestion && (
             <QuestionCard
               question={currentQuestion}
@@ -281,12 +264,8 @@ export default function HostGame() {
             />
           )}
 
-          {/* Timer */}
-          {buzzerActive && (
-            <Timer seconds={timerRemaining} total={timerSeconds} />
-          )}
+          {buzzerActive && <Timer seconds={timerRemaining} total={timerSeconds} />}
 
-          {/* Buzzer Feed */}
           <BuzzerFeed
             buzzerQueue={buzzerQueue}
             currentQuestion={currentQuestion}
@@ -296,7 +275,6 @@ export default function HostGame() {
           />
         </div>
 
-        {/* Sidebar - Leaderboard */}
         <div className="lg:col-span-1">
           <Leaderboard
             players={players}

@@ -1,5 +1,7 @@
+'use client';
+
 import { useState } from 'react';
-import type { Player } from '../types';
+import type { Player } from '@/lib/types';
 
 interface LeaderboardProps {
   players: Player[];
@@ -20,10 +22,10 @@ export default function Leaderboard({
   const [editScore, setEditScore] = useState('');
 
   const getPositionStyle = (position: number) => {
-    if (position === 1) return 'position-1';
-    if (position === 2) return 'position-2';
-    if (position === 3) return 'position-3';
-    return 'bg-nye-dark';
+    if (position === 1) return 'bg-gradient-to-r from-[#FFD700] to-[#FFA500]';
+    if (position === 2) return 'bg-gradient-to-r from-[#C0C0C0] to-[#A8A8A8]';
+    if (position === 3) return 'bg-gradient-to-r from-[#CD7F32] to-[#8B4513]';
+    return 'bg-[#1A1A1A]';
   };
 
   const getPositionEmoji = (position: number) => {
@@ -43,8 +45,8 @@ export default function Leaderboard({
   };
 
   return (
-    <div className="bg-nye-dark/80 rounded-xl p-4 border border-nye-gold/30">
-      <h2 className="text-xl font-semibold text-nye-gold mb-4 flex items-center gap-2">
+    <div className="bg-[#1A1A1A]/80 rounded-xl p-4 border border-[#FFD700]/30">
+      <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
         <span>🏆</span> Leaderboard
       </h2>
 
@@ -56,10 +58,8 @@ export default function Leaderboard({
             <div
               key={player.id}
               className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ${
-                awardedPlayer === player.id
-                  ? 'ring-2 ring-nye-gold animate-pulse'
-                  : ''
-              } ${currentPlayerId === player.id ? 'ring-2 ring-nye-gold-light' : ''} ${
+                awardedPlayer === player.id ? 'ring-2 ring-[#FFD700] animate-pulse' : ''
+              } ${currentPlayerId === player.id ? 'ring-2 ring-[#FFEC8B]' : ''} ${
                 !player.connected ? 'opacity-50' : ''
               }`}
             >
@@ -71,7 +71,7 @@ export default function Leaderboard({
                 >
                   {getPositionEmoji(player.position)}
                 </span>
-                <span className={`font-medium ${currentPlayerId === player.id ? 'text-nye-gold' : 'text-white'}`}>
+                <span className={`font-medium ${currentPlayerId === player.id ? 'text-[#FFD700]' : 'text-white'}`}>
                   {player.name}
                   {!player.connected && <span className="text-gray-500 text-xs ml-2">(disconnected)</span>}
                 </span>
@@ -84,7 +84,7 @@ export default function Leaderboard({
                       type="number"
                       value={editScore}
                       onChange={(e) => setEditScore(e.target.value)}
-                      className="w-16 px-2 py-1 rounded bg-nye-black border border-nye-gold/30 text-white text-sm"
+                      className="w-16 px-2 py-1 rounded bg-[#0A0A0A] border border-[#FFD700]/30 text-white text-sm"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleScoreSubmit(player.id);
@@ -108,7 +108,7 @@ export default function Leaderboard({
                   <>
                     <span
                       className={`text-lg font-bold ${
-                        awardedPlayer === player.id ? 'text-nye-gold animate-bounce' : 'text-nye-gold-light'
+                        awardedPlayer === player.id ? 'text-[#FFD700] animate-bounce' : 'text-[#FFEC8B]'
                       }`}
                     >
                       {player.score}
@@ -119,7 +119,7 @@ export default function Leaderboard({
                           setEditingPlayer(player.id);
                           setEditScore(player.score.toString());
                         }}
-                        className="text-gray-500 hover:text-nye-gold text-xs ml-2"
+                        className="text-gray-500 hover:text-[#FFD700] text-xs ml-2"
                         title="Edit score"
                       >
                         ✏️

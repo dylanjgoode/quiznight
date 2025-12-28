@@ -1,6 +1,6 @@
 # Quiz Night - New Year's Eve Edition
 
-A real-time multiplayer quiz game with buzzer functionality, perfect for New Year's Eve parties! Built with FastAPI (WebSocket) backend and React frontend.
+A real-time multiplayer quiz game with buzzer functionality, perfect for New Year's Eve parties! Built with FastAPI (WebSocket) backend and Next.js frontend.
 
 ## Features
 
@@ -34,16 +34,15 @@ quiznight/
 │   ├── main.py              # FastAPI application
 │   ├── questions.json       # Question bank (editable)
 │   ├── requirements.txt     # Python dependencies
-│   ├── Dockerfile          # For deployment
-│   └── .env.example        # Environment template
+│   ├── Dockerfile           # For deployment
+│   └── .env.example         # Environment template
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/          # Route pages
-│   │   ├── components/     # React components
-│   │   ├── hooks/          # Custom hooks
-│   │   └── ...
-│   ├── vercel.json         # Vercel config
-│   └── .env.example        # Environment template
+│   │   ├── app/             # Next.js App Router pages
+│   │   ├── components/      # React components
+│   │   ├── hooks/           # Custom hooks
+│   │   └── lib/             # Utilities and types
+│   └── .env.example         # Environment template
 └── README.md
 ```
 
@@ -54,8 +53,8 @@ quiznight/
 ```bash
 cd backend
 
-# Create virtual environment
-python -m venv venv
+# Create virtual environment (use Python 3.11 or 3.12)
+python3.12 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
@@ -73,14 +72,11 @@ cd frontend
 # Install dependencies
 npm install
 
-# Copy environment file
-cp .env.example .env
-
 # Run development server
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173` and the backend at `http://localhost:8000`.
+The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:8000`.
 
 ## How to Play
 
@@ -123,8 +119,8 @@ Edit `backend/questions.json` to add your own questions:
 2. Import the repository in [Vercel](https://vercel.com)
 3. Set the root directory to `frontend`
 4. Add environment variables:
-   - `VITE_API_URL`: Your backend URL (e.g., `https://your-backend.railway.app`)
-   - `VITE_WS_URL`: Your backend WebSocket URL (e.g., `wss://your-backend.railway.app`)
+   - `NEXT_PUBLIC_API_URL`: Your backend URL (e.g., `https://your-backend.railway.app`)
+   - `NEXT_PUBLIC_WS_URL`: Your backend WebSocket URL (e.g., `wss://your-backend.railway.app`)
 5. Deploy!
 
 ### Backend (Railway)
@@ -150,7 +146,7 @@ Edit `backend/questions.json` to add your own questions:
 ## Tech Stack
 
 - **Backend**: Python FastAPI with WebSocket support
-- **Frontend**: React (Vite) with TypeScript and Tailwind CSS
+- **Frontend**: Next.js 16 with TypeScript and Tailwind CSS
 - **Real-time**: WebSocket for live sync
 - **Animations**: CSS animations + canvas-confetti
 - **Sound**: Web Audio API

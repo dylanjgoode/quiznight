@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 
 interface Sparkle {
@@ -29,7 +31,7 @@ export default function Sparkles() {
       {sparkles.map((sparkle) => (
         <div
           key={sparkle.id}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-pulse"
           style={{
             left: `${sparkle.x}%`,
             top: `${sparkle.y}%`,
@@ -37,8 +39,8 @@ export default function Sparkles() {
             height: `${sparkle.size}px`,
             background: 'linear-gradient(135deg, #FFD700, #FFEC8B)',
             boxShadow: '0 0 10px rgba(255, 215, 0, 0.8)',
-            animation: `sparkle ${sparkle.duration}s ease-in-out infinite`,
             animationDelay: `${sparkle.delay}s`,
+            animationDuration: `${sparkle.duration}s`,
           }}
         />
       ))}

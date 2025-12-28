@@ -1,4 +1,6 @@
-import type { Question } from '../types';
+'use client';
+
+import type { Question } from '@/lib/types';
 
 interface QuestionCardProps {
   question: Question;
@@ -18,9 +20,9 @@ export default function QuestionCard({
   onNext,
 }: QuestionCardProps) {
   return (
-    <div className="bg-nye-dark/80 rounded-xl p-6 border border-nye-gold/30">
+    <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
       <div className="flex items-start justify-between mb-4">
-        <span className="bg-nye-gold/20 text-nye-gold px-3 py-1 rounded-full text-sm">
+        <span className="bg-[#FFD700]/20 text-[#FFD700] px-3 py-1 rounded-full text-sm">
           {question.points} points
         </span>
         {buzzerActive && (
@@ -43,10 +45,10 @@ export default function QuestionCard({
               className={`p-4 rounded-lg border-2 transition-all ${
                 answerRevealed && isCorrect
                   ? 'bg-green-500/20 border-green-500 text-green-400'
-                  : 'bg-nye-black/50 border-gray-700 text-white'
+                  : 'bg-[#0A0A0A]/50 border-gray-700 text-white'
               }`}
             >
-              <span className="font-bold mr-2 text-nye-gold">{optionLetter}.</span>
+              <span className="font-bold mr-2 text-[#FFD700]">{optionLetter}.</span>
               {option}
               {answerRevealed && isCorrect && <span className="ml-2">✓</span>}
             </div>
@@ -66,7 +68,7 @@ export default function QuestionCard({
         {!answerRevealed && (
           <button
             onClick={onReveal}
-            className="bg-nye-purple hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+            className="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
           >
             Reveal Answer
           </button>

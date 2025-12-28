@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseWebSocketOptions {
@@ -91,7 +93,8 @@ export function useWebSocket(url: string | null, options: UseWebSocketOptions = 
     return () => {
       disconnect();
     };
-  }, [url]); // Only reconnect when URL changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url]);
 
   return {
     isConnected,

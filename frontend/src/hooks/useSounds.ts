@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useRef } from 'react';
 
 // Audio context for Web Audio API sounds
@@ -10,7 +12,6 @@ function getAudioContext(): AudioContext {
   return audioContext;
 }
 
-// Generate buzzer sound
 function playBuzzerSound() {
   const ctx = getAudioContext();
   const oscillator = ctx.createOscillator();
@@ -29,11 +30,9 @@ function playBuzzerSound() {
   oscillator.stop(ctx.currentTime + 0.2);
 }
 
-// Generate correct answer sound
 function playCorrectSound() {
   const ctx = getAudioContext();
-
-  const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
+  const frequencies = [523.25, 659.25, 783.99];
 
   frequencies.forEach((freq, i) => {
     const oscillator = ctx.createOscillator();
@@ -53,10 +52,8 @@ function playCorrectSound() {
   });
 }
 
-// Generate wrong answer sound
 function playWrongSound() {
   const ctx = getAudioContext();
-
   const oscillator = ctx.createOscillator();
   const gainNode = ctx.createGain();
 
@@ -74,7 +71,6 @@ function playWrongSound() {
   oscillator.stop(ctx.currentTime + 0.3);
 }
 
-// Generate countdown tick sound
 function playTickSound() {
   const ctx = getAudioContext();
   const oscillator = ctx.createOscillator();
@@ -93,11 +89,9 @@ function playTickSound() {
   oscillator.stop(ctx.currentTime + 0.05);
 }
 
-// Generate start round sound
 function playStartSound() {
   const ctx = getAudioContext();
-
-  const frequencies = [392, 523.25, 659.25, 783.99]; // G4, C5, E5, G5
+  const frequencies = [392, 523.25, 659.25, 783.99];
 
   frequencies.forEach((freq, i) => {
     const oscillator = ctx.createOscillator();
@@ -117,18 +111,15 @@ function playStartSound() {
   });
 }
 
-// Generate celebration sound
 function playCelebrationSound() {
   const ctx = getAudioContext();
-
-  // Play a little fanfare
   const notes = [
-    { freq: 523.25, time: 0 },     // C5
-    { freq: 659.25, time: 0.1 },   // E5
-    { freq: 783.99, time: 0.2 },   // G5
-    { freq: 1046.5, time: 0.3 },   // C6
-    { freq: 783.99, time: 0.5 },   // G5
-    { freq: 1046.5, time: 0.6 },   // C6
+    { freq: 523.25, time: 0 },
+    { freq: 659.25, time: 0.1 },
+    { freq: 783.99, time: 0.2 },
+    { freq: 1046.5, time: 0.3 },
+    { freq: 783.99, time: 0.5 },
+    { freq: 1046.5, time: 0.6 },
   ];
 
   notes.forEach(({ freq, time }) => {
