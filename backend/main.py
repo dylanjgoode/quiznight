@@ -16,7 +16,7 @@ load_dotenv()
 app = FastAPI(title="Quiz Night API")
 
 # CORS configuration
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174,http://localhost:5175").split(",")
+origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://localhost:5173,http://localhost:5174").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
