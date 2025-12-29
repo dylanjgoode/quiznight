@@ -91,51 +91,9 @@
     "Historia de España": [
       {
         "id": "his1",
-        "question": "In what year did the Reconquista end with the fall of Granada?",
-        "options": ["1412", "1469", "1492", "1512"],
-        "correct_answer": "1492",
-        "points": 100
-      },
-      {
-        "id": "his2",
-        "question": "Who were the Catholic Monarchs who unified Spain?",
-        "options": ["Philip II and Mary I", "Ferdinand and Isabella", "Charles V and Isabella", "Alfonso X and Berengaria"],
-        "correct_answer": "Ferdinand and Isabella",
-        "points": 100
-      },
-      {
-        "id": "his3",
-        "question": "The Spanish Armada was defeated in 1588 attempting to invade which country?",
-        "options": ["France", "Portugal", "England", "Netherlands"],
-        "correct_answer": "England",
-        "points": 100
-      },
-      {
-        "id": "his4",
-        "question": "What phrase was inscribed on medals celebrating the defeat of the Spanish Armada?",
-        "options": ["God Save the Queen", "God blew and they were scattered", "Victory belongs to the brave", "The sea remembers"],
-        "correct_answer": "God blew and they were scattered",
-        "points": 200
-      },
-      {
-        "id": "his5",
-        "question": "The Moors invaded Spain in 711 AD and named it what?",
-        "options": ["Hispania", "Al-Andalus", "Iberia", "Sefarad"],
-        "correct_answer": "Al-Andalus",
-        "points": 150
-      },
-      {
-        "id": "his6",
-        "question": "Which famous palace in Granada was built by the Nasrid Dynasty?",
-        "options": ["El Escorial", "The Alcázar", "The Alhambra", "The Mezquita"],
-        "correct_answer": "The Alhambra",
-        "points": 100
-      },
-      {
-        "id": "his7",
-        "question": "The Spanish Civil War (1936-1939) was won by forces led by which general?",
-        "options": ["Francisco Franco", "Manuel Azaña", "Emilio Mola", "Juan Negrín"],
-        "correct_answer": "Francisco Franco",
+        "question": "In what century did the Moors invade Spain?",
+        "options": ["6th century", "7th century", "8th century", "9th century"],
+        "correct_answer": "8th century",
         "points": 100
       }
     ],
