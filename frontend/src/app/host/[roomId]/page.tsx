@@ -10,6 +10,8 @@ import Leaderboard from '@/components/Leaderboard';
 import BuzzerFeed from '@/components/BuzzerFeed';
 import Timer from '@/components/Timer';
 import QuestionCard from '@/components/QuestionCard';
+import FirstBuzzAlert from '@/components/FirstBuzzAlert';
+import ScorePopup, { type ScoreChange } from '@/components/ScorePopup';
 import confetti from 'canvas-confetti';
 
 interface QuestionsData {
@@ -33,7 +35,11 @@ export default function HostGame() {
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [buzzerActive, setBuzzerActive] = useState(false);
   const [answerRevealed, setAnswerRevealed] = useState(false);
-  const [awardedPlayer, setAwardedPlayer] = useState<string | null>(null);
+  const [awardedPlayers, setAwardedPlayers] = useState<Set<string>>(new Set());
+  const [lastAwardedPlayer, setLastAwardedPlayer] = useState<string | null>(null);
+  const [firstBuzzer, setFirstBuzzer] = useState<string | null>(null);
+  const [showFirstBuzzAlert, setShowFirstBuzzAlert] = useState(false);
+  const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
 
   useEffect(() => {
     fetch(`${API_URL}/api/questions`)
@@ -67,6 +73,11 @@ export default function HostGame() {
         case 'player_buzzed':
           setBuzzerQueue(message.buzzer_queue);
           playSound('buzzer');
+          // Show dramatic alert for first buzz
+          if (message.buzzer_queue.length === 1) {
+            setFirstBuzzer(message.buzzer_queue[0].name);
+            setShowFirstBuzzAlert(true);
+          }
           break;
         case 'timer_tick':
           setTimerRemaining(message.remaining);
@@ -80,18 +91,37 @@ export default function HostGame() {
           break;
         case 'leaderboard_update':
           setPlayers(message.leaderboard);
-          if (message.awarded_player && message.points && message.points > 0) {
-            setAwardedPlayer(message.awarded_player);
-            playSound('correct');
-            confetti({
-              particleCount: 100,
-              spread: 70,
-              origin: { y: 0.6 },
-              colors: ['#FFD700', '#FFEC8B', '#FFA500'],
-            });
-            setTimeout(() => setAwardedPlayer(null), 2000);
-          } else if (message.awarded_player && message.points && message.points < 0) {
-            playSound('wrong');
+          if (message.awarded_player && message.points) {
+            const awardedId = message.awarded_player as string;
+            const awardedPlayerData = message.leaderboard.find(
+              (p: Player) => p.id === awardedId
+            );
+            // Track awarded player
+            setAwardedPlayers(prev => new Set(prev).add(awardedId));
+
+            // Add floating score popup
+            const scoreChange: ScoreChange = {
+              id: `${awardedId}-${Date.now()}`,
+              playerId: awardedId,
+              playerName: awardedPlayerData?.name || 'Player',
+              points: message.points,
+              timestamp: Date.now(),
+            };
+            setScoreChanges((prev) => [...prev, scoreChange]);
+
+            if (message.points > 0) {
+              setLastAwardedPlayer(awardedId);
+              playSound('correct');
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FFD700', '#FFEC8B', '#FFA500'],
+              });
+              setTimeout(() => setLastAwardedPlayer(null), 2000);
+            } else {
+              playSound('wrong');
+            }
           }
           break;
         case 'answer_revealed':
@@ -129,6 +159,9 @@ export default function HostGame() {
     setBuzzerQueue([]);
     setAnswerRevealed(false);
     setBuzzerActive(true);
+    setFirstBuzzer(null);
+    setShowFirstBuzzAlert(false);
+    setAwardedPlayers(new Set());
     sendMessage({ type: 'start_question', question });
     playSound('start');
   };
@@ -152,11 +185,31 @@ export default function HostGame() {
   };
 
   const nextQuestion = () => {
-    setQuestionIndex((prev) => prev + 1);
-    setCurrentQuestion(null);
+    if (!currentCategory) return;
+    const categoryQuestions = questions.categories[currentCategory] || [];
+    const nextIndex = questionIndex + 1;
+
+    // Clear current state
     setBuzzerQueue([]);
     setAnswerRevealed(false);
-    sendMessage({ type: 'next_question' });
+    setFirstBuzzer(null);
+    setShowFirstBuzzAlert(false);
+    setAwardedPlayers(new Set());
+    setQuestionIndex(nextIndex);
+
+    if (nextIndex < categoryQuestions.length) {
+      // Automatically start next question (don't send next_question, go straight to start)
+      const nextQ = categoryQuestions[nextIndex];
+      setCurrentQuestion(nextQ);
+      setBuzzerActive(true);
+      sendMessage({ type: 'start_question', question: nextQ });
+      playSound('start');
+    } else {
+      // No more questions in category - go back to selection
+      setCurrentQuestion(null);
+      setBuzzerActive(false);
+      sendMessage({ type: 'next_question' });
+    }
   };
 
   const updateTimer = (seconds: number) => {
@@ -168,6 +221,10 @@ export default function HostGame() {
     const link = `${window.location.origin}/join/${roomId}`;
     navigator.clipboard.writeText(link);
   };
+
+  const removeScoreChange = useCallback((id: string) => {
+    setScoreChanges((prev) => prev.filter((change) => change.id !== id));
+  }, []);
 
   if (!isConnected) {
     return (
@@ -185,9 +242,30 @@ export default function HostGame() {
 
   return (
     <div className="min-h-screen p-4 lg:p-6">
+      {/* First Buzz Alert Overlay */}
+      <FirstBuzzAlert
+        playerName={firstBuzzer || ''}
+        show={showFirstBuzzAlert}
+        onComplete={() => setShowFirstBuzzAlert(false)}
+      />
+
+      {/* Score Change Popups */}
+      <ScorePopup changes={scoreChanges} onRemove={removeScoreChange} />
+
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-[#FFD700]">Quiz Night Host</h1>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.location.href = '/'}
+              className="text-gray-400 hover:text-[#FFD700] transition-colors"
+              title="Back to Home"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <h1 className="text-2xl lg:text-3xl font-bold text-[#FFD700]">Quiz Night Host</h1>
+          </div>
           <div className="flex items-center gap-4 mt-2">
             <span className="text-gray-400">
               Room Code: <span className="text-[#FFD700] font-mono font-bold text-xl">{roomCode}</span>
@@ -225,8 +303,35 @@ export default function HostGame() {
           {!currentQuestion && (
             <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
               <h2 className="text-xl font-semibold text-[#FFD700] mb-4">
-                {currentCategory ? `${currentCategory} - Question ${questionIndex + 1}/${categoryQuestions.length}` : 'Select Category'}
+                {currentCategory ? currentCategory : 'Select Category'}
               </h2>
+
+              {/* Question Progress Bar */}
+              {currentCategory && categoryQuestions.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex justify-between text-sm text-gray-400 mb-2">
+                    <span>Progress</span>
+                    <span>Question {questionIndex + 1} of {categoryQuestions.length}</span>
+                  </div>
+                  <div className="h-3 bg-[#0A0A0A] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] transition-all duration-500 ease-out"
+                      style={{ width: `${((questionIndex + 1) / categoryQuestions.length) * 100}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    {categoryQuestions.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          idx < questionIndex ? 'bg-[#FFD700]' : idx === questionIndex ? 'bg-[#FFD700] ring-2 ring-[#FFD700]/50' : 'bg-gray-700'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-3 mb-6">
                 {categories.map((cat) => (
                   <button
@@ -270,7 +375,7 @@ export default function HostGame() {
             buzzerQueue={buzzerQueue}
             currentQuestion={currentQuestion}
             answerRevealed={answerRevealed}
-            awardedPlayer={awardedPlayer}
+            awardedPlayers={awardedPlayers}
             onAwardPoints={awardPoints}
           />
         </div>
@@ -278,7 +383,7 @@ export default function HostGame() {
         <div className="lg:col-span-1">
           <Leaderboard
             players={players}
-            awardedPlayer={awardedPlayer}
+            awardedPlayer={lastAwardedPlayer}
             isHost={true}
             onAdjustScore={adjustScore}
           />

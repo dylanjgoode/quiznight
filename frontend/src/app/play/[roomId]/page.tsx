@@ -159,9 +159,20 @@ export default function PlayerGame() {
     <div className="min-h-screen flex flex-col">
       <div className="p-4 bg-[#1A1A1A]/80 border-b border-[#FFD700]/30">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-[#FFD700]">{playerName}</h1>
-            <p className="text-gray-400 text-sm">Position #{position}</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.location.href = '/'}
+              className="text-gray-400 hover:text-[#FFD700] transition-colors"
+              title="Back to Home"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-[#FFD700]">{playerName}</h1>
+              <p className="text-gray-400 text-sm">Position #{position}</p>
+            </div>
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-[#FFD700]">{score}</div>

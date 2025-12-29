@@ -51,7 +51,21 @@ export default function Leaderboard({
       </h2>
 
       {players.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">Waiting for players...</p>
+        <div className="text-center py-4">
+          <div className="relative w-full max-w-[200px] mx-auto rounded-xl overflow-hidden border-2 border-[#FFD700]/50 mb-4">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto"
+            >
+              <source src="/images/party_dog.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <p className="text-gray-400 text-sm animate-pulse">Waiting for players to join...</p>
+          <p className="text-[#FFD700]/60 text-xs mt-2">Share the room code!</p>
+        </div>
       ) : (
         <div className="space-y-2">
           {players.map((player) => (
