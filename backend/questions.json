@@ -95,6 +95,34 @@
         "options": ["6th century", "7th century", "8th century", "9th century"],
         "correct_answer": "8th century",
         "points": 100
+      },
+      {
+        "id": "his2",
+        "question": "The name \"Spain\" is derived from the Carthaginian word Ispania. What does this ancient name literally mean?",
+        "options": ["Land of Dogs", "Land of Pigs", "Land of Rabbits", "Land of Horses"],
+        "correct_answer": "Land of Rabbits",
+        "points": 150
+      },
+      {
+        "id": "his3",
+        "question": "Jerónimo de Ayanz y Beaumont is a forgotten genius. Which of these did he patent in 1606, long before the Industrial Revolution?",
+        "options": ["The first modern bicycle", "The first functional steam engine (used for draining mines)", "The first telescope with multiple lenses", "The first automated olive oil press"],
+        "correct_answer": "The first functional steam engine (used for draining mines)",
+        "points": 200
+      },
+      {
+        "id": "his4",
+        "question": "Which Spanish Golden Age author was so popular that people started using his name as a literal adjective to mean \"excellent\" or \"perfect\" (a trend that lasted for decades)?",
+        "options": ["Miguel de Cervantes", "Luis de Góngora", "Lope de Vega", "Tirso de Molina"],
+        "correct_answer": "Lope de Vega",
+        "points": 150
+      },
+      {
+        "id": "his5",
+        "question": "Many historians agree the global symbol for the dollar ($) has Spanish roots. What is it based on?",
+        "options": ["The monogram of King Philip II", "The Pillars of Hercules wrapped with a ribbon, found on Spanish coins", "A simplified map of the trade route between Seville and Havana", "The \"S\" stands for \"Spain\" and the \"|\" for the Atlantic crossing"],
+        "correct_answer": "The Pillars of Hercules wrapped with a ribbon, found on Spanish coins",
+        "points": 200
       }
     ],
     "España 2025": [
