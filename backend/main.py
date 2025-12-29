@@ -138,12 +138,12 @@ class GameRoom:
             await asyncio.sleep(0.5)
             if not self.mini_game_active:
                 break
-            # Apply tide to all non-finished players
+            # Apply tide to all non-finished players (1.5 per tick = 3 per second)
             changed = False
             for player_id in list(self.mini_game_positions.keys()):
                 if player_id not in self.mini_game_finished:
                     old_pos = self.mini_game_positions[player_id]
-                    self.mini_game_positions[player_id] = max(0, old_pos - 1)
+                    self.mini_game_positions[player_id] = max(0, old_pos - 1.5)
                     if old_pos != self.mini_game_positions[player_id]:
                         changed = True
             if changed:
@@ -377,6 +377,14 @@ async def handle_host_message(room: GameRoom, data: dict):
         await room.broadcast_to_all({
             "type": "question_cleared"
         })
+
+    elif msg_type == "end_mini_game":
+        if room.mini_game_active:
+            room.stop_mini_game()
+            await room.broadcast_to_all({
+                "type": "mini_game_ended",
+                "winners": room.mini_game_finished[:2]
+            })
 
     elif msg_type == "kick_player":
         player_id = data.get("player_id")
