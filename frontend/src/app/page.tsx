@@ -50,81 +50,93 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
       <Sparkles />
 
-      {/* Logo / Title */}
-      <div className="text-center mb-12 relative z-10">
-        <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-[#FFD700] via-[#FFEC8B] to-[#FFD700] bg-clip-text text-transparent">
-          Quiz Night
-        </h1>
-        <p className="text-xl md:text-2xl text-[#FFEC8B]/80">
-          New Year&apos;s Eve Edition
-        </p>
-        <div className="mt-4 text-6xl">
-          🎉✨🥂
-        </div>
-      </div>
+      {/* Main Content - Two Column Layout */}
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 w-full max-w-6xl">
 
-      {/* Main Card */}
-      <div className="w-full max-w-md bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-8 border border-[#FFD700]/30 shadow-lg gold-glow relative z-10">
-        {/* Create Game Section */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Host a Game</h2>
-          <input
-            type="text"
-            placeholder="Your name"
-            value={hostName}
-            onChange={(e) => setHostName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4"
-            maxLength={20}
-          />
-          <button
-            onClick={createRoom}
-            disabled={isCreating}
-            className="w-full btn-gold"
-          >
-            {isCreating ? 'Creating...' : 'Create Room'}
-          </button>
-        </div>
-
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#FFD700]/30"></div>
+        {/* Left Side - Video & Title */}
+        <div className="flex flex-col items-center lg:items-start">
+          {/* Quiz Master Mascot */}
+          <div className="relative w-80 md:w-[28rem] rounded-2xl overflow-hidden border-4 border-[#FFD700] mb-6" style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto"
+            >
+              <source src="/images/party_dog.mp4" type="video/mp4" />
+            </video>
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-[#1A1A1A] px-4 text-gray-400">or</span>
+
+          {/* Logo / Title */}
+          <div className="text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-[#FFD700] via-[#FFEC8B] to-[#FFD700] bg-clip-text text-transparent">
+              Noche de Trivia
+            </h1>
+            <p className="text-xl md:text-2xl text-[#FFEC8B]/80">
+              Edición Año Nuevo 2026
+            </p>
           </div>
         </div>
 
-        {/* Join Game Section */}
-        <div>
-          <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Join a Game</h2>
-          <input
-            type="text"
-            placeholder="Room code (e.g., ABC123)"
-            value={roomCode}
-            onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-            className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4 uppercase"
-            maxLength={6}
-          />
-          <button
-            onClick={joinRoom}
-            className="w-full bg-transparent border-2 border-[#FFD700] text-[#FFD700] font-bold py-3 px-6 rounded-lg hover:bg-[#FFD700] hover:text-[#0A0A0A] transition-all duration-200"
-          >
-            Join Room
-          </button>
+        {/* Right Side - Host/Join Card */}
+        <div className="w-full max-w-md bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-8 border border-[#FFD700]/30 shadow-lg gold-glow">
+          {/* Create Game Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Host a Game</h2>
+            <input
+              type="text"
+              placeholder="Your name"
+              value={hostName}
+              onChange={(e) => setHostName(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4"
+              maxLength={20}
+            />
+            <button
+              onClick={createRoom}
+              disabled={isCreating}
+              className="w-full btn-gold"
+            >
+              {isCreating ? 'Creating...' : 'Create Room'}
+            </button>
+          </div>
+
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#FFD700]/30"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-[#1A1A1A] px-4 text-gray-400">or</span>
+            </div>
+          </div>
+
+          {/* Join Game Section */}
+          <div>
+            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Join a Game</h2>
+            <input
+              type="text"
+              placeholder="Room code (e.g., ABC123)"
+              value={roomCode}
+              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+              className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4 uppercase"
+              maxLength={6}
+            />
+            <button
+              onClick={joinRoom}
+              className="w-full bg-transparent border-2 border-[#FFD700] text-[#FFD700] font-bold py-3 px-6 rounded-lg hover:bg-[#FFD700] hover:text-[#0A0A0A] transition-all duration-200"
+            >
+              Join Room
+            </button>
+          </div>
+
+          {error && (
+            <p className="mt-4 text-red-400 text-center text-sm">{error}</p>
+          )}
         </div>
-
-        {error && (
-          <p className="mt-4 text-red-400 text-center text-sm">{error}</p>
-        )}
       </div>
-
-      {/* Footer */}
-      <p className="mt-8 text-gray-500 text-sm relative z-10">
-        Happy New Year 2025! 🎆
-      </p>
     </div>
   );
 }
