@@ -184,6 +184,159 @@
         "correct_answer": "Taylor Swift",
         "points": 100
       }
+    ],
+    "Athletic Bilbao": [
+      {
+        "id": "ath1",
+        "question": "What is Athletic Bilbao's stadium nicknamed due to its revered status?",
+        "options": ["The Fortress", "The Cathedral", "The Temple", "The Colosseum"],
+        "correct_answer": "The Cathedral",
+        "points": 100
+      },
+      {
+        "id": "ath2",
+        "question": "What unique signing policy has Athletic Bilbao maintained since 1911?",
+        "options": ["Only Spanish players", "Only Basque players", "Only academy graduates", "Only European players"],
+        "correct_answer": "Only Basque players",
+        "points": 100
+      },
+      {
+        "id": "ath3",
+        "question": "In 2024, Athletic Bilbao won the Copa del Rey. How many years had it been since their last major trophy?",
+        "options": ["25 years", "30 years", "40 years", "50 years"],
+        "correct_answer": "40 years",
+        "points": 150
+      },
+      {
+        "id": "ath4",
+        "question": "Nico Williams scored in the Euro 2024 final. Which national team does his brother Iñaki play for?",
+        "options": ["Spain", "Ghana", "England", "France"],
+        "correct_answer": "Ghana",
+        "points": 200
+      },
+      {
+        "id": "ath5",
+        "question": "Why are Athletic Bilbao players called 'Los Leones' (The Lions)?",
+        "options": ["The team mascot is a lion", "The stadium is near a church honoring a saint thrown to lions", "Lions appear on the Basque flag", "The founder's surname meant lion"],
+        "correct_answer": "The stadium is near a church honoring a saint thrown to lions",
+        "points": 200
+      },
+      {
+        "id": "ath6",
+        "question": "How did Athletic Bilbao get their famous red and white striped kit?",
+        "options": ["Copied from AC Milan", "A player couldn't find blue jerseys in England", "The Basque flag colors", "Chosen by fan vote in 1898"],
+        "correct_answer": "A player couldn't find blue jerseys in England",
+        "points": 150
+      },
+      {
+        "id": "ath7",
+        "question": "Along with Real Madrid and Barcelona, Athletic Bilbao shares what unique distinction in La Liga?",
+        "options": ["Most Copa del Rey wins", "Never been relegated since La Liga started", "Most academy players in national team", "Oldest stadium in Spain"],
+        "correct_answer": "Never been relegated since La Liga started",
+        "points": 150
+      }
+    ],
+    "Historia de España": [
+      {
+        "id": "his1",
+        "question": "In what year did the Reconquista end with the fall of Granada?",
+        "options": ["1412", "1469", "1492", "1512"],
+        "correct_answer": "1492",
+        "points": 100
+      },
+      {
+        "id": "his2",
+        "question": "Who were the Catholic Monarchs who unified Spain?",
+        "options": ["Philip II and Mary I", "Ferdinand and Isabella", "Charles V and Isabella", "Alfonso X and Berengaria"],
+        "correct_answer": "Ferdinand and Isabella",
+        "points": 100
+      },
+      {
+        "id": "his3",
+        "question": "The Spanish Armada was defeated in 1588 attempting to invade which country?",
+        "options": ["France", "Portugal", "England", "Netherlands"],
+        "correct_answer": "England",
+        "points": 100
+      },
+      {
+        "id": "his4",
+        "question": "What phrase was inscribed on medals celebrating the defeat of the Spanish Armada?",
+        "options": ["God Save the Queen", "God blew and they were scattered", "Victory belongs to the brave", "The sea remembers"],
+        "correct_answer": "God blew and they were scattered",
+        "points": 200
+      },
+      {
+        "id": "his5",
+        "question": "The Moors invaded Spain in 711 AD and named it what?",
+        "options": ["Hispania", "Al-Andalus", "Iberia", "Sefarad"],
+        "correct_answer": "Al-Andalus",
+        "points": 150
+      },
+      {
+        "id": "his6",
+        "question": "Which famous palace in Granada was built by the Nasrid Dynasty?",
+        "options": ["El Escorial", "The Alcázar", "The Alhambra", "The Mezquita"],
+        "correct_answer": "The Alhambra",
+        "points": 100
+      },
+      {
+        "id": "his7",
+        "question": "The Spanish Civil War (1936-1939) was won by forces led by which general?",
+        "options": ["Francisco Franco", "Manuel Azaña", "Emilio Mola", "Juan Negrín"],
+        "correct_answer": "Francisco Franco",
+        "points": 100
+      }
+    ],
+    "España 2025": [
+      {
+        "id": "esp25-1",
+        "question": "On April 28, 2025, over 50 million people in Spain experienced what major event?",
+        "options": ["A massive earthquake", "A nationwide blackout", "A general strike", "A solar eclipse"],
+        "correct_answer": "A nationwide blackout",
+        "points": 150
+      },
+      {
+        "id": "esp25-2",
+        "question": "What devastating natural disaster hit Valencia in October 2024, killing over 200 people?",
+        "options": ["An earthquake", "DANA floods", "A wildfire", "A tornado"],
+        "correct_answer": "DANA floods",
+        "points": 100
+      },
+      {
+        "id": "esp25-3",
+        "question": "Spain introduced a new worker protection in 2025 allowing up to 4 days off during what?",
+        "options": ["Mental health crises", "Weather emergencies", "Family illness", "Public transport strikes"],
+        "correct_answer": "Weather emergencies",
+        "points": 200
+      },
+      {
+        "id": "esp25-4",
+        "question": "In the 2025 UEFA Nations League final, Spain lost on penalties to which country?",
+        "options": ["France", "Germany", "Portugal", "Italy"],
+        "correct_answer": "Portugal",
+        "points": 150
+      },
+      {
+        "id": "esp25-5",
+        "question": "Which Madrid stadium hosted Spain's first official NFL game in 2025?",
+        "options": ["Wanda Metropolitano", "Santiago Bernabéu", "Cívitas Metropolitano", "Estadio Olímpico"],
+        "correct_answer": "Santiago Bernabéu",
+        "points": 150
+      },
+      {
+        "id": "esp25-6",
+        "question": "In September 2025, Spain became one of the first countries to impose a total weapons embargo on which country?",
+        "options": ["Russia", "Iran", "Israel", "North Korea"],
+        "correct_answer": "Israel",
+        "points": 200
+      },
+      {
+        "id": "esp25-7",
+        "question": "2025 became Spain's worst year for what natural disaster in three decades?",
+        "options": ["Earthquakes", "Floods", "Forest fires", "Droughts"],
+        "correct_answer": "Forest fires",
+        "points": 150
+      }
     ]
   }
 }
