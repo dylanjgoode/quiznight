@@ -5,9 +5,10 @@ import { useParams } from 'next/navigation';
 import { WS_URL, API_URL } from '@/lib/config';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useSounds } from '@/hooks/useSounds';
-import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage } from '@/lib/types';
+import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage, MiniGamePosition } from '@/lib/types';
 import Leaderboard from '@/components/Leaderboard';
 import BuzzerFeed from '@/components/BuzzerFeed';
+import BoatRace from '@/components/BoatRace';
 import Timer from '@/components/Timer';
 import QuestionCard from '@/components/QuestionCard';
 import FirstBuzzAlert from '@/components/FirstBuzzAlert';
@@ -40,6 +41,10 @@ export default function HostGame() {
   const [firstBuzzer, setFirstBuzzer] = useState<string | null>(null);
   const [showFirstBuzzAlert, setShowFirstBuzzAlert] = useState(false);
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
+  // Mini-game state
+  const [miniGameActive, setMiniGameActive] = useState(false);
+  const [miniGamePositions, setMiniGamePositions] = useState<Record<string, MiniGamePosition>>({});
+  const [miniGameWinners, setMiniGameWinners] = useState<string[]>([]);
 
   useEffect(() => {
     fetch(`${API_URL}/api/questions`)
@@ -60,6 +65,12 @@ export default function HostGame() {
             setPlayers(hostInit.players);
             setCategories(hostInit.categories);
             setTimerSeconds(hostInit.timer_seconds);
+            // Mini-game state
+            if (hostInit.mini_game) {
+              setMiniGamePositions(hostInit.mini_game.positions);
+              setMiniGameWinners(hostInit.mini_game.winners);
+            }
+            setMiniGameActive(hostInit.mini_game_active);
           }
           break;
         case 'player_joined':
@@ -132,6 +143,13 @@ export default function HostGame() {
           setBuzzerQueue([]);
           setAnswerRevealed(false);
           setBuzzerActive(false);
+          break;
+        case 'mini_game_update':
+          setMiniGamePositions(message.positions);
+          setMiniGameWinners(message.winners);
+          break;
+        case 'mini_game_ended':
+          setMiniGameActive(false);
           break;
       }
     },
@@ -300,6 +318,17 @@ export default function HostGame() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 space-y-6">
+          {/* Mini-game boat race when waiting for game to start */}
+          {miniGameActive && !currentQuestion && Object.keys(miniGamePositions).length > 0 && (
+            <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
+              <BoatRace
+                positions={miniGamePositions}
+                winners={miniGameWinners}
+                isHost={true}
+              />
+            </div>
+          )}
+
           {!currentQuestion && (
             <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
               <h2 className="text-xl font-semibold text-[#FFD700] mb-4">

@@ -5,8 +5,9 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { WS_URL } from '@/lib/config';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useSounds } from '@/hooks/useSounds';
-import type { Player, WebSocketMessage, PlayerInitMessage } from '@/lib/types';
+import type { Player, WebSocketMessage, PlayerInitMessage, MiniGamePosition } from '@/lib/types';
 import Leaderboard from '@/components/Leaderboard';
+import BoatRace from '@/components/BoatRace';
 import confetti from 'canvas-confetti';
 
 export default function PlayerGame() {
@@ -28,6 +29,10 @@ export default function PlayerGame() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [awardedPlayer, setAwardedPlayer] = useState<string | null>(null);
   const [pointsReceived, setPointsReceived] = useState<number | null>(null);
+  // Mini-game state
+  const [miniGameActive, setMiniGameActive] = useState(false);
+  const [miniGamePositions, setMiniGamePositions] = useState<Record<string, MiniGamePosition>>({});
+  const [miniGameWinners, setMiniGameWinners] = useState<string[]>([]);
 
   const triggerHaptic = () => {
     if ('vibrate' in navigator) {
@@ -48,6 +53,12 @@ export default function PlayerGame() {
             setPosition(playerInit.position);
             setBuzzerActive(playerInit.buzzer_active);
             setPlayers(playerInit.leaderboard);
+            // Mini-game state
+            if (playerInit.mini_game) {
+              setMiniGamePositions(playerInit.mini_game.positions);
+              setMiniGameWinners(playerInit.mini_game.winners);
+            }
+            setMiniGameActive(playerInit.mini_game_active);
           }
           break;
         case 'buzzer_active':
@@ -107,6 +118,25 @@ export default function PlayerGame() {
         case 'kicked':
           router.push('/');
           break;
+        case 'mini_game_update':
+          setMiniGamePositions(message.positions);
+          setMiniGameWinners(message.winners);
+          break;
+        case 'mini_game_ended':
+          setMiniGameActive(false);
+          break;
+        case 'mini_game_bonus':
+          // Show bonus points notification
+          setPointsReceived(message.points);
+          playSound('celebration');
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#FFD700', '#FFEC8B', '#FFA500'],
+          });
+          setTimeout(() => setPointsReceived(null), 3000);
+          break;
       }
     },
     [playerId, playSound, router]
@@ -118,21 +148,35 @@ export default function PlayerGame() {
   );
 
   const buzz = useCallback(() => {
+    // Work for both regular buzzer and mini-game
     if (buzzerActive && !hasBuzzed) {
       sendMessage({ type: 'buzz' });
+    } else if (miniGameActive && !buzzerActive) {
+      // Mini-game mode - can always press unless finished
+      const myPosition = playerId ? miniGamePositions[playerId] : null;
+      if (!myPosition?.finished) {
+        sendMessage({ type: 'buzz' });
+        triggerHaptic();
+      }
     }
-  }, [buzzerActive, hasBuzzed, sendMessage]);
+  }, [buzzerActive, hasBuzzed, miniGameActive, playerId, miniGamePositions, sendMessage]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && buzzerActive && !hasBuzzed) {
-        e.preventDefault();
-        buzz();
+      if (e.code === 'Space') {
+        const canBuzzRegular = buzzerActive && !hasBuzzed;
+        const myPosition = playerId ? miniGamePositions[playerId] : null;
+        const canBuzzMiniGame = miniGameActive && !buzzerActive && !myPosition?.finished;
+
+        if (canBuzzRegular || canBuzzMiniGame) {
+          e.preventDefault();
+          buzz();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [buzzerActive, hasBuzzed, buzz]);
+  }, [buzzerActive, hasBuzzed, miniGameActive, playerId, miniGamePositions, buzz]);
 
   if (!playerName) {
     router.push(`/join/${roomId}`);
@@ -192,6 +236,17 @@ export default function PlayerGame() {
       )}
 
       <div className="flex-1 flex flex-col items-center justify-center p-4">
+        {/* Mini-game boat race when waiting */}
+        {miniGameActive && !buzzerActive && (
+          <div className="w-full max-w-md mb-6">
+            <BoatRace
+              positions={miniGamePositions}
+              winners={miniGameWinners}
+              currentPlayerId={playerId || undefined}
+            />
+          </div>
+        )}
+
         {buzzerActive && (
           <div className="mb-8">
             <div
@@ -204,46 +259,70 @@ export default function PlayerGame() {
           </div>
         )}
 
-        <button
-          onClick={buzz}
-          disabled={!buzzerActive || hasBuzzed}
-          className={`w-64 h-64 md:w-80 md:h-80 rounded-full font-bold text-3xl transition-all transform ${
-            buzzerActive && !hasBuzzed
-              ? 'bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] active:scale-95 buzzer-active shadow-2xl'
-              : hasBuzzed
-              ? buzzPosition === 1
-                ? 'bg-green-500 text-white'
-                : 'bg-blue-500 text-white'
-              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          {hasBuzzed ? (
-            <div className="flex flex-col items-center">
-              <span className="text-5xl mb-2">
-                {buzzPosition === 1 ? '🥇' : `#${buzzPosition}`}
-              </span>
-              <span className="text-xl">
-                {buzzPosition === 1 ? 'First!' : 'Buzzed!'}
-              </span>
-            </div>
-          ) : buzzerActive ? (
-            <div className="flex flex-col items-center">
-              <span className="text-5xl mb-2">🔔</span>
-              <span>BUZZ!</span>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <span className="text-4xl mb-2">⏳</span>
-              <span className="text-xl">Wait...</span>
-            </div>
-          )}
-        </button>
+        {(() => {
+          const myPosition = playerId ? miniGamePositions[playerId] : null;
+          const isMiniGameMode = miniGameActive && !buzzerActive;
+          const hasFinishedRace = myPosition?.finished;
+
+          return (
+            <button
+              onClick={buzz}
+              disabled={buzzerActive ? hasBuzzed : (!isMiniGameMode || hasFinishedRace)}
+              className={`w-64 h-64 md:w-80 md:h-80 rounded-full font-bold text-3xl transition-all transform ${
+                buzzerActive && !hasBuzzed
+                  ? 'bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] active:scale-95 buzzer-active shadow-2xl'
+                  : hasBuzzed
+                  ? buzzPosition === 1
+                    ? 'bg-green-500 text-white'
+                    : 'bg-blue-500 text-white'
+                  : isMiniGameMode && !hasFinishedRace
+                  ? 'bg-gradient-to-br from-[#4a90d9] to-[#2563eb] text-white active:scale-95 shadow-2xl'
+                  : isMiniGameMode && hasFinishedRace
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {hasBuzzed ? (
+                <div className="flex flex-col items-center">
+                  <span className="text-5xl mb-2">
+                    {buzzPosition === 1 ? '🥇' : `#${buzzPosition}`}
+                  </span>
+                  <span className="text-xl">
+                    {buzzPosition === 1 ? 'First!' : 'Buzzed!'}
+                  </span>
+                </div>
+              ) : buzzerActive ? (
+                <div className="flex flex-col items-center">
+                  <span className="text-5xl mb-2">🔔</span>
+                  <span>BUZZ!</span>
+                </div>
+              ) : isMiniGameMode && !hasFinishedRace ? (
+                <div className="flex flex-col items-center">
+                  <span className="text-5xl mb-2">🚣</span>
+                  <span>ROW!</span>
+                </div>
+              ) : isMiniGameMode && hasFinishedRace ? (
+                <div className="flex flex-col items-center">
+                  <span className="text-5xl mb-2">🏁</span>
+                  <span className="text-xl">Finished!</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <span className="text-4xl mb-2">⏳</span>
+                  <span className="text-xl">Wait...</span>
+                </div>
+              )}
+            </button>
+          );
+        })()}
 
         <p className="mt-8 text-gray-400 text-center">
           {buzzerActive && !hasBuzzed
             ? 'Tap the button or press SPACE to buzz!'
             : hasBuzzed
             ? 'Waiting for the host...'
+            : miniGameActive && !buzzerActive
+            ? 'Spam the button to row your boat across!'
             : 'Watch the host screen for the question!'}
         </p>
       </div>

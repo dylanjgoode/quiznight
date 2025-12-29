@@ -21,6 +21,18 @@ export interface BuzzEntry {
   position: number;
 }
 
+// Mini-game types
+export interface MiniGamePosition {
+  name: string;
+  position: number;
+  finished: boolean;
+}
+
+export interface MiniGameState {
+  positions: Record<string, MiniGamePosition>;
+  winners: string[];
+}
+
 // Host init message
 export type HostInitMessage = {
   type: 'init';
@@ -29,6 +41,8 @@ export type HostInitMessage = {
   players: Player[];
   categories: string[];
   timer_seconds: number;
+  mini_game: MiniGameState;
+  mini_game_active: boolean;
 };
 
 // Player init message
@@ -40,6 +54,8 @@ export type PlayerInitMessage = {
   position: number;
   buzzer_active: boolean;
   leaderboard: Player[];
+  mini_game: MiniGameState;
+  mini_game_active: boolean;
 };
 
 export type WebSocketMessage =
@@ -60,4 +76,7 @@ export type WebSocketMessage =
   | { type: 'leaderboard_update'; leaderboard: Player[]; awarded_player?: string; points?: number }
   | { type: 'timer_updated'; seconds: number }
   | { type: 'question_cleared' }
-  | { type: 'kicked' };
+  | { type: 'kicked' }
+  | { type: 'mini_game_update'; positions: Record<string, MiniGamePosition>; winners: string[] }
+  | { type: 'mini_game_ended'; winners: string[] }
+  | { type: 'mini_game_bonus'; points: number; finish_position: number };

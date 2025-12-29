@@ -49,6 +49,11 @@ class GameRoom:
         self.current_category: Optional[str] = None
         self.questions_data = load_questions()
         self.used_questions: set[str] = set()
+        # Mini-game state (boat race)
+        self.mini_game_positions: dict[str, float] = {}  # player_id -> position (0-100)
+        self.mini_game_finished: list[str] = []  # player_ids who finished, in order
+        self.mini_game_tide_task: Optional[asyncio.Task] = None
+        self.mini_game_active = True  # Active until first question starts
 
     def get_leaderboard(self):
         sorted_players = sorted(
@@ -101,6 +106,95 @@ class GameRoom:
                 await self.players[player_id]["ws"].send_json(message)
             except:
                 pass
+
+    def get_mini_game_state(self):
+        """Get current mini-game state for broadcasting"""
+        positions = {}
+        for player_id, position in self.mini_game_positions.items():
+            if player_id in self.players:
+                positions[player_id] = {
+                    "name": self.players[player_id]["name"],
+                    "position": position,
+                    "finished": player_id in self.mini_game_finished
+                }
+        return {
+            "positions": positions,
+            "winners": self.mini_game_finished[:2]  # First 2 winners
+        }
+
+    async def broadcast_mini_game_state(self):
+        """Broadcast mini-game state to all"""
+        if not self.mini_game_active:
+            return
+        state = self.get_mini_game_state()
+        await self.broadcast_to_all({
+            "type": "mini_game_update",
+            **state
+        })
+
+    async def start_mini_game_tide(self):
+        """Run the tide that pulls boats back"""
+        while self.mini_game_active:
+            await asyncio.sleep(0.5)
+            if not self.mini_game_active:
+                break
+            # Apply tide to all non-finished players
+            changed = False
+            for player_id in list(self.mini_game_positions.keys()):
+                if player_id not in self.mini_game_finished:
+                    old_pos = self.mini_game_positions[player_id]
+                    self.mini_game_positions[player_id] = max(0, old_pos - 1)
+                    if old_pos != self.mini_game_positions[player_id]:
+                        changed = True
+            if changed:
+                await self.broadcast_mini_game_state()
+
+    async def handle_mini_game_buzz(self, player_id: str) -> bool:
+        """Handle a buzz during mini-game. Returns True if handled."""
+        if not self.mini_game_active:
+            return False
+        if player_id in self.mini_game_finished:
+            return True  # Already finished, ignore but consume the buzz
+
+        # Initialize position if new
+        if player_id not in self.mini_game_positions:
+            self.mini_game_positions[player_id] = 0
+
+        # Move boat forward
+        self.mini_game_positions[player_id] = min(100, self.mini_game_positions[player_id] + 10)
+
+        # Check if finished
+        if self.mini_game_positions[player_id] >= 100:
+            self.mini_game_finished.append(player_id)
+            finish_position = len(self.mini_game_finished)
+
+            # Award bonus points for first 2 finishers
+            if finish_position <= 2:
+                self.players[player_id]["score"] += 50
+                # Send points notification to player
+                await self.send_to_player(player_id, {
+                    "type": "mini_game_bonus",
+                    "points": 50,
+                    "finish_position": finish_position
+                })
+                # Update leaderboard for everyone
+                await self.broadcast_to_all({
+                    "type": "leaderboard_update",
+                    "leaderboard": self.get_leaderboard(),
+                    "awarded_player": player_id,
+                    "points": 50
+                })
+
+        # Broadcast updated positions
+        await self.broadcast_mini_game_state()
+        return True
+
+    def stop_mini_game(self):
+        """Stop the mini-game (when first question starts)"""
+        self.mini_game_active = False
+        if self.mini_game_tide_task:
+            self.mini_game_tide_task.cancel()
+            self.mini_game_tide_task = None
 
 
 # Store all active rooms
@@ -167,7 +261,9 @@ async def host_websocket(websocket: WebSocket, room_id: str):
         "room_code": room_id[:6].upper(),
         "players": room.get_leaderboard(),
         "categories": list(room.questions_data.get("categories", {}).keys()),
-        "timer_seconds": room.timer_seconds
+        "timer_seconds": room.timer_seconds,
+        "mini_game": room.get_mini_game_state(),
+        "mini_game_active": room.mini_game_active
     })
 
     try:
@@ -195,6 +291,14 @@ async def handle_host_message(room: GameRoom, data: dict):
     elif msg_type == "start_question":
         question_data = data.get("question")
         if question_data:
+            # Stop mini-game when first question starts
+            if room.mini_game_active:
+                room.stop_mini_game()
+                await room.broadcast_to_all({
+                    "type": "mini_game_ended",
+                    "winners": room.mini_game_finished[:2]
+                })
+
             room.current_question = question_data
             room.question_active = True
             room.buzzer_queue = []
@@ -346,6 +450,13 @@ async def player_websocket(websocket: WebSocket, room_id: str, player_name: str)
         len(leaderboard)
     )
 
+    # Initialize player in mini-game if active
+    if room.mini_game_active and player_id not in room.mini_game_positions:
+        room.mini_game_positions[player_id] = 0
+        # Start tide task if this is the first player
+        if not room.mini_game_tide_task:
+            room.mini_game_tide_task = asyncio.create_task(room.start_mini_game_tide())
+
     # Send player their initial state
     await websocket.send_json({
         "type": "init",
@@ -354,7 +465,9 @@ async def player_websocket(websocket: WebSocket, room_id: str, player_name: str)
         "score": room.players[player_id]["score"],
         "position": player_position,
         "buzzer_active": room.question_active,
-        "leaderboard": leaderboard
+        "leaderboard": leaderboard,
+        "mini_game": room.get_mini_game_state(),
+        "mini_game_active": room.mini_game_active
     })
 
     # Notify host and other players
@@ -391,6 +504,11 @@ async def handle_player_message(room: GameRoom, player_id: str, data: dict):
     msg_type = data.get("type")
 
     if msg_type == "buzz":
+        # If mini-game is active and no question, handle as mini-game buzz
+        if not room.question_active and room.mini_game_active:
+            await room.handle_mini_game_buzz(player_id)
+            return
+
         if room.question_active and player_id in room.players:
             # Check if player already buzzed
             if not any(b["player_id"] == player_id for b in room.buzzer_queue):
