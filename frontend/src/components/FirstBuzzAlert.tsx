@@ -14,12 +14,12 @@ export default function FirstBuzzAlert({ playerName, show, onComplete }: FirstBu
   useEffect(() => {
     if (show) {
       setPhase('enter');
-      const showTimer = setTimeout(() => setPhase('show'), 100);
-      const exitTimer = setTimeout(() => setPhase('exit'), 3000);
+      const showTimer = setTimeout(() => setPhase('show'), 50);
+      const exitTimer = setTimeout(() => setPhase('exit'), 900);
       const hideTimer = setTimeout(() => {
         setPhase('hidden');
         onComplete();
-      }, 3500);
+      }, 1050);
 
       return () => {
         clearTimeout(showTimer);

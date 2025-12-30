@@ -406,7 +406,7 @@ export default function HostGame() {
             />
           )}
 
-          {buzzerActive && <Timer seconds={timerRemaining} total={timerSeconds} />}
+          {buzzerActive && currentQuestion?.type !== 'music' && <Timer seconds={timerRemaining} total={timerSeconds} />}
 
           <BuzzerFeed
             buzzerQueue={buzzerQueue}

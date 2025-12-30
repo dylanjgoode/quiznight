@@ -316,10 +316,12 @@ async def handle_host_message(room: GameRoom, data: dict):
                 "timer": room.timer_seconds
             })
 
-            # Start timer
-            if room.timer_task:
-                room.timer_task.cancel()
-            room.timer_task = asyncio.create_task(run_timer(room))
+            # Start timer (skip for music questions - host controls playback)
+            is_music_question = question_data.get("type") == "music"
+            if not is_music_question:
+                if room.timer_task:
+                    room.timer_task.cancel()
+                room.timer_task = asyncio.create_task(run_timer(room))
 
     elif msg_type == "stop_question":
         room.question_active = False

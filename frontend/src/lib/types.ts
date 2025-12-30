@@ -4,6 +4,8 @@ export interface Question {
   options: string[];
   correct_answer: string;
   points: number;
+  type?: 'text' | 'music';  // defaults to 'text' if not specified
+  audio_file?: string;       // filename in /music/ folder for music questions
 }
 
 export interface Player {

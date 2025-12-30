@@ -3,95 +3,303 @@
     "Historia de España": [
       {
         "id": "his1",
-        "question": "In what century did the Moors invade Spain?",
-        "options": ["6th century", "7th century", "8th century", "9th century"],
-        "correct_answer": "8th century",
+        "question": "¿En qué siglo invadieron los moros España?",
+        "options": ["Siglo VI", "Siglo VII", "Siglo VIII", "Siglo IX"],
+        "correct_answer": "Siglo VIII",
         "points": 100
       },
       {
         "id": "his2",
-        "question": "The name \"Spain\" is derived from the Carthaginian word Ispania. What does this ancient name literally mean?",
-        "options": ["Land of Dogs", "Land of Pigs", "Land of Rabbits", "Land of Horses"],
-        "correct_answer": "Land of Rabbits",
+        "question": "El nombre \"España\" deriva de la palabra cartaginesa Ispania. ¿Qué significa literalmente este nombre antiguo?",
+        "options": ["Tierra de Perros", "Tierra de Cerdos", "Tierra de Conejos", "Tierra de Caballos"],
+        "correct_answer": "Tierra de Conejos",
         "points": 150
       },
       {
         "id": "his3",
-        "question": "Jerónimo de Ayanz y Beaumont is a forgotten genius. Which of these did he patent in 1606, long before the Industrial Revolution?",
-        "options": ["The first modern bicycle", "The first functional steam engine (used for draining mines)", "The first telescope with multiple lenses", "The first automated olive oil press"],
-        "correct_answer": "The first functional steam engine (used for draining mines)",
+        "question": "Jerónimo de Ayanz y Beaumont es un genio olvidado. ¿Cuál de estos inventos patentó en 1606, mucho antes de la Revolución Industrial?",
+        "options": ["La primera bicicleta moderna", "La primera máquina de vapor funcional (usada para drenar minas)", "El primer telescopio con múltiples lentes", "La primera prensa de aceite de oliva automatizada"],
+        "correct_answer": "La primera máquina de vapor funcional (usada para drenar minas)",
         "points": 200
       },
       {
         "id": "his4",
-        "question": "Which Spanish Golden Age author was so popular that people started using his name as a literal adjective to mean \"excellent\" or \"perfect\" (a trend that lasted for decades)?",
+        "question": "¿Qué autor del Siglo de Oro español fue tan popular que la gente empezó a usar su nombre como adjetivo literal para significar \"excelente\" o \"perfecto\" (una tendencia que duró décadas)?",
         "options": ["Miguel de Cervantes", "Luis de Góngora", "Lope de Vega", "Tirso de Molina"],
         "correct_answer": "Lope de Vega",
         "points": 150
       },
       {
         "id": "his5",
-        "question": "Many historians agree the global symbol for the dollar ($) has Spanish roots. What is it based on?",
-        "options": ["The monogram of King Philip II", "The Pillars of Hercules wrapped with a ribbon, found on Spanish coins", "A simplified map of the trade route between Seville and Havana", "The \"S\" stands for \"Spain\" and the \"|\" for the Atlantic crossing"],
-        "correct_answer": "The Pillars of Hercules wrapped with a ribbon, found on Spanish coins",
+        "question": "Muchos historiadores coinciden en que el símbolo global del dólar ($) tiene raíces españolas. ¿En qué se basa?",
+        "options": ["El monograma del Rey Felipe II", "Las Columnas de Hércules envueltas con una cinta, que aparecen en las monedas españolas", "Un mapa simplificado de la ruta comercial entre Sevilla y La Habana", "La \"S\" representa \"Spain\" y el \"|\" el cruce del Atlántico"],
+        "correct_answer": "Las Columnas de Hércules envueltas con una cinta, que aparecen en las monedas españolas",
         "points": 200
-      }
-    ],
-    "España 2025": [
+      },
       {
-        "id": "esp25-5",
-        "question": "Which Madrid stadium hosted Spain's first official NFL game in 2025?",
-        "options": ["Wanda Metropolitano", "Santiago Bernabéu", "Cívitas Metropolitano", "Estadio Olímpico"],
-        "correct_answer": "Santiago Bernabéu",
-        "points": 150
-      }
-    ],
-    "Música + Cine": [
-      {
-        "id": "mc1",
-        "question": "How many languages does Rosalía speak on her album Lux?",
-        "options": ["Four", "Eight", "13", "17"],
-        "correct_answer": "13",
-        "points": 200
-      }
-    ],
-    "Este Año": [
-      {
-        "id": "ea1",
-        "question": "What was the name of the Chinese AI app that rapidly became the most downloaded free app in the US in January, sparking a tech-stock dive?",
-        "options": ["DeepSeek", "DeepMind", "DeepThought", "DeepHeat"],
-        "correct_answer": "DeepSeek",
+        "id": "his6",
+        "question": "¿Cuál fue la posesión de ultramar más rentable de España en el apogeo de su imperio?",
+        "options": ["México", "Perú", "Cuba", "Las Filipinas"],
+        "correct_answer": "Perú",
         "points": 150
       },
       {
-        "id": "ea2",
-        "question": "What is the name of Nasa's programme to return US astronauts to the moon?",
-        "options": ["Horizon", "Artemis", "Intrepid", "Elder One"],
-        "correct_answer": "Artemis",
+        "id": "his7",
+        "question": "¿Cuál mató a más gente en España?",
+        "options": ["La Inquisición Española", "Los Juicios de Brujas", "La Peste Negra", "Las Guerras Napoleónicas"],
+        "correct_answer": "Los Juicios de Brujas",
+        "points": 200
+      },
+      {
+        "id": "his8",
+        "question": "Nombra el pueblo español que está completamente rodeado por Francia.",
+        "options": ["Llívia", "Andorra la Vella", "Puigcerdà", "Camprodon"],
+        "correct_answer": "Llívia",
         "points": 150
       }
     ],
     "María": [
       {
         "id": "maria1",
-        "question": "What is María's favourite food?",
-        "options": ["Pizza", "Steak", "Sushi", "Pasta"],
-        "correct_answer": "Steak",
+        "question": "¿Cuál es la comida favorita de María?",
+        "options": ["Pizza", "Carne", "Sushi", "Pasta"],
+        "correct_answer": "Carne",
         "points": 100
       },
       {
         "id": "maria2",
-        "question": "What is María's favourite colour?",
-        "options": ["Blue", "Purple", "Orange", "Green"],
-        "correct_answer": "Orange",
+        "question": "¿Cuál es el color favorito de María?",
+        "options": ["Azul", "Morado", "Naranja", "Verde"],
+        "correct_answer": "Naranja",
         "points": 100
       },
       {
         "id": "maria3",
-        "question": "What is María's favourite dish from Hanoi restaurant?",
-        "options": ["Rice with prawns and curry", "Pho bo", "Spring rolls", "Bun cha"],
-        "correct_answer": "Rice with prawns and curry",
+        "question": "¿Cuál es el plato favorito de María del restaurante Hanoi?",
+        "options": ["Arroz con gambas y curry", "Pho bo", "Rollitos de primavera", "Bun cha"],
+        "correct_answer": "Arroz con gambas y curry",
         "points": 150
+      },
+      {
+        "id": "maria4",
+        "question": "Si María no fuera psicóloga, querría ser...?",
+        "options": ["Organizadora de Eventos", "Política", "Paseadora de Perros", "Panadera"],
+        "correct_answer": "Organizadora de Eventos",
+        "points": 150
+      },
+      {
+        "id": "maria5",
+        "question": "¿Cuál era la frase favorita de María cuando era adolescente?",
+        "options": ["Sin Más", "Qué Pasa", "Vale Vale", "Yo Qué Sé"],
+        "correct_answer": "Sin Más",
+        "points": 150
+      },
+      {
+        "id": "maria6",
+        "question": "Si María fuera dictadora, ¿qué ley aprobaría primero?",
+        "options": ["Nada de turistas, nunca", "Solo tarta de chocolate de postre", "Nada de franceses (en ningún sitio)", "Nada de políticos"],
+        "correct_answer": "Nada de turistas, nunca",
+        "points": 200
+      }
+    ],
+    "Cultura General": [
+      {
+        "id": "gk1",
+        "question": "¿Cuál es la quinta letra del alfabeto griego?",
+        "options": ["Delta", "Épsilon", "Zeta", "Theta"],
+        "correct_answer": "Épsilon",
+        "points": 100
+      },
+      {
+        "id": "gk2",
+        "question": "¿Cuántos puntos aparecen en un par de dados?",
+        "options": ["36", "42", "48", "54"],
+        "correct_answer": "42",
+        "points": 100
+      },
+      {
+        "id": "gk3",
+        "question": "¿Dónde estarías si estuvieras de pie en la Escalinata Española?",
+        "options": ["Madrid", "Barcelona", "Roma", "Sevilla"],
+        "correct_answer": "Roma",
+        "points": 100
+      },
+      {
+        "id": "gk4",
+        "question": "¿De qué país es originario Halloween?",
+        "options": ["Escocia", "Irlanda", "Gales", "Inglaterra"],
+        "correct_answer": "Irlanda",
+        "points": 100
+      },
+      {
+        "id": "gk5",
+        "question": "¿Cómo se conoce a un grupo de pandas?",
+        "options": ["Un bambú", "Un abrazo", "Una vergüenza", "Una torre"],
+        "correct_answer": "Una vergüenza",
+        "points": 150
+      },
+      {
+        "id": "gk6",
+        "question": "¿Cuántos corazones tiene un pulpo?",
+        "options": ["Uno", "Dos", "Tres", "Cuatro"],
+        "correct_answer": "Tres",
+        "points": 150
+      },
+      {
+        "id": "gk7",
+        "question": "¿Qué significa \"HTTP\" en una dirección web?",
+        "options": ["Protocolo de Transferencia de HiperTexto", "Protocolo de Transmisión de HiperTexto", "Protocolo de Transferencia de Alta Tecnología", "Proceso de Transferencia de HiperTecnología"],
+        "correct_answer": "Protocolo de Transferencia de HiperTexto",
+        "points": 100
+      },
+      {
+        "id": "gk8",
+        "question": "¿Cuántos elementos hay en la tabla periódica?",
+        "options": ["92", "103", "118", "126"],
+        "correct_answer": "118",
+        "points": 100
+      },
+      {
+        "id": "gk9",
+        "question": "¿Cuál es el órgano más grande del cuerpo humano?",
+        "options": ["El hígado", "El cerebro", "La piel", "Los intestinos"],
+        "correct_answer": "La piel",
+        "points": 100
+      },
+      {
+        "id": "gk10",
+        "question": "¿Qué película ganó el Premio de la Academia a Mejor Película en los Óscar de principios de 2025?",
+        "options": ["Anora", "The Brutalist", "Emilia Pérez", "Wicked"],
+        "correct_answer": "Anora",
+        "points": 150
+      },
+      {
+        "id": "gk11",
+        "question": "¿Cuál es el único pájaro capaz de volar hacia atrás?",
+        "options": ["El Martín Pescador", "El Colibrí", "El Vencejo", "El Pájaro Carpintero"],
+        "correct_answer": "El Colibrí",
+        "points": 100
+      },
+      {
+        "id": "gk12",
+        "question": "Tu cerebro representa solo el 2% de tu peso corporal total. ¿Qué porcentaje de tu energía diaria (calorías) consume?",
+        "options": ["10%", "15%", "20%", "25%"],
+        "correct_answer": "20%",
+        "points": 150
+      },
+      {
+        "id": "gk13",
+        "question": "¿Qué animal puede \"respirar\" por el trasero (cloaca) para sobrevivir bajo el agua durante la hibernación invernal?",
+        "options": ["La Tortuga de Caja", "La Tortuga Pintada", "La Tortuga Mordedora", "El Galápago de Orejas Rojas"],
+        "correct_answer": "La Tortuga Pintada",
+        "points": 200
+      },
+      {
+        "id": "gk14",
+        "question": "Cuando comes una fruta—como un melocotón o una sandía—biológicamente hablando, ¿qué parte de la anatomía de la planta estás comiendo?",
+        "options": ["La Vaina de Semillas", "El Ovario", "El Pericarpio", "El Receptáculo"],
+        "correct_answer": "El Ovario",
+        "points": 200
+      },
+      {
+        "id": "gk15",
+        "question": "Si desenrollaras todo el ADN de un solo cuerpo humano y lo estiraras de punta a punta, ¿hasta dónde llegaría?",
+        "options": ["Unos 1.600 millones de km (de la Tierra a Saturno)", "Unos 16.000 millones de km (de la Tierra a Plutón y vuelta)", "Unos 160 millones de km (de la Tierra al Sol)", "Unos 380.000 km (de la Tierra a la Luna)"],
+        "correct_answer": "Unos 16.000 millones de km (de la Tierra a Plutón y vuelta)",
+        "points": 200
+      },
+      {
+        "id": "gk16",
+        "question": "¿Qué fruta tiene las semillas por fuera?",
+        "options": ["La Frambuesa", "La Fresa", "La Mora", "El Kiwi"],
+        "correct_answer": "La Fresa",
+        "points": 100
+      },
+      {
+        "id": "gk17",
+        "question": "¿Cuál era el nombre de la aplicación china de IA que se convirtió rápidamente en la aplicación gratuita más descargada en EE.UU. en enero, provocando una caída en las acciones tecnológicas?",
+        "options": ["DeepSeek", "DeepMind", "DeepThought", "DeepHeat"],
+        "correct_answer": "DeepSeek",
+        "points": 150
+      },
+      {
+        "id": "gk18",
+        "question": "¿Cómo se llama el programa de la NASA para devolver astronautas estadounidenses a la Luna?",
+        "options": ["Horizon", "Artemis", "Intrepid", "Elder One"],
+        "correct_answer": "Artemis",
+        "points": 150
+      }
+    ],
+    "Música": [
+      {
+        "id": "music1",
+        "question": "Identifica esta canción",
+        "type": "music",
+        "audio_file": "Como-Camarón-by-Estopa.mp3",
+        "options": [
+          "Como Camarón - Estopa",
+          "La Raja de Tu Falda - Estopa",
+          "Vino Tinto - Estopa",
+          "Tu Calorro - Estopa"
+        ],
+        "correct_answer": "Como Camarón - Estopa",
+        "points": 100
+      },
+      {
+        "id": "music2",
+        "question": "Identifica esta canción",
+        "type": "music",
+        "audio_file": "bomba-by-king-africa.mp3",
+        "options": [
+          "Bomba - King Africa",
+          "La Bomba - Azul Azul",
+          "Bombón - Daddy Yankee",
+          "Boom Boom - Vengaboys"
+        ],
+        "correct_answer": "Bomba - King Africa",
+        "points": 100
+      },
+      {
+        "id": "music3",
+        "question": "Identifica esta canción",
+        "type": "music",
+        "audio_file": "good-times-by-jungle.mp3",
+        "options": [
+          "Good Times - Jungle",
+          "Busy Earnin' - Jungle",
+          "Happy Man - Jungle",
+          "Keep Moving - Jungle"
+        ],
+        "correct_answer": "Good Times - Jungle",
+        "points": 150
+      },
+      {
+        "id": "music4",
+        "question": "Identifica esta canción",
+        "type": "music",
+        "audio_file": "i-want-to-break-free-by-queen.mp3",
+        "options": [
+          "I Want to Break Free - Queen",
+          "Don't Stop Me Now - Queen",
+          "Somebody to Love - Queen",
+          "Radio Ga Ga - Queen"
+        ],
+        "correct_answer": "I Want to Break Free - Queen",
+        "points": 100
+      },
+      {
+        "id": "music5",
+        "question": "Identifica esta canción",
+        "type": "music",
+        "audio_file": "lollipop-by-mika.mp3",
+        "options": [
+          "Lollipop - MIKA",
+          "Grace Kelly - MIKA",
+          "Love Today - MIKA",
+          "Relax, Take It Easy - MIKA"
+        ],
+        "correct_answer": "Lollipop - MIKA",
+        "points": 100
       }
     ]
   }
