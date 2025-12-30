@@ -1,93 +1,5 @@
 {
   "categories": {
-    "Music": [
-      {
-        "id": "m1",
-        "question": "Which band performed 'Bohemian Rhapsody'?",
-        "options": ["The Beatles", "Led Zeppelin", "Queen", "Pink Floyd"],
-        "correct_answer": "Queen",
-        "points": 100
-      },
-      {
-        "id": "m2",
-        "question": "What instrument has 88 keys?",
-        "options": ["Guitar", "Violin", "Piano", "Accordion"],
-        "correct_answer": "Piano",
-        "points": 100
-      },
-      {
-        "id": "m3",
-        "question": "Who is known as the 'King of Pop'?",
-        "options": ["Elvis Presley", "Michael Jackson", "Prince", "Justin Timberlake"],
-        "correct_answer": "Michael Jackson",
-        "points": 100
-      },
-      {
-        "id": "m4",
-        "question": "What decade did disco music become popular?",
-        "options": ["1960s", "1970s", "1980s", "1990s"],
-        "correct_answer": "1970s",
-        "points": 100
-      },
-      {
-        "id": "m5",
-        "question": "Which artist released the album '1989'?",
-        "options": ["Katy Perry", "Taylor Swift", "Ariana Grande", "Lady Gaga"],
-        "correct_answer": "Taylor Swift",
-        "points": 100
-      }
-    ],
-    "Athletic Bilbao": [
-      {
-        "id": "ath1",
-        "question": "What is Athletic Bilbao's stadium nicknamed due to its revered status?",
-        "options": ["The Fortress", "The Cathedral", "The Temple", "The Colosseum"],
-        "correct_answer": "The Cathedral",
-        "points": 100
-      },
-      {
-        "id": "ath2",
-        "question": "What unique signing policy has Athletic Bilbao maintained since 1911?",
-        "options": ["Only Spanish players", "Only Basque players", "Only academy graduates", "Only European players"],
-        "correct_answer": "Only Basque players",
-        "points": 100
-      },
-      {
-        "id": "ath3",
-        "question": "In 2024, Athletic Bilbao won the Copa del Rey. How many years had it been since their last major trophy?",
-        "options": ["25 years", "30 years", "40 years", "50 years"],
-        "correct_answer": "40 years",
-        "points": 150
-      },
-      {
-        "id": "ath4",
-        "question": "Nico Williams scored in the Euro 2024 final. Which national team does his brother Iñaki play for?",
-        "options": ["Spain", "Ghana", "England", "France"],
-        "correct_answer": "Ghana",
-        "points": 200
-      },
-      {
-        "id": "ath5",
-        "question": "Why are Athletic Bilbao players called 'Los Leones' (The Lions)?",
-        "options": ["The team mascot is a lion", "The stadium is near a church honoring a saint thrown to lions", "Lions appear on the Basque flag", "The founder's surname meant lion"],
-        "correct_answer": "The stadium is near a church honoring a saint thrown to lions",
-        "points": 200
-      },
-      {
-        "id": "ath6",
-        "question": "How did Athletic Bilbao get their famous red and white striped kit?",
-        "options": ["Copied from AC Milan", "A player couldn't find blue jerseys in England", "The Basque flag colors", "Chosen by fan vote in 1898"],
-        "correct_answer": "A player couldn't find blue jerseys in England",
-        "points": 150
-      },
-      {
-        "id": "ath7",
-        "question": "Along with Real Madrid and Barcelona, Athletic Bilbao shares what unique distinction in La Liga?",
-        "options": ["Most Copa del Rey wins", "Never been relegated since La Liga started", "Most academy players in national team", "Oldest stadium in Spain"],
-        "correct_answer": "Never been relegated since La Liga started",
-        "points": 150
-      }
-    ],
     "Historia de España": [
       {
         "id": "his1",
@@ -127,52 +39,58 @@
     ],
     "España 2025": [
       {
-        "id": "esp25-1",
-        "question": "On April 28, 2025, over 50 million people in Spain experienced what major event?",
-        "options": ["A massive earthquake", "A nationwide blackout", "A general strike", "A solar eclipse"],
-        "correct_answer": "A nationwide blackout",
-        "points": 150
-      },
-      {
-        "id": "esp25-2",
-        "question": "What devastating natural disaster hit Valencia in October 2024, killing over 200 people?",
-        "options": ["An earthquake", "DANA floods", "A wildfire", "A tornado"],
-        "correct_answer": "DANA floods",
-        "points": 100
-      },
-      {
-        "id": "esp25-3",
-        "question": "Spain introduced a new worker protection in 2025 allowing up to 4 days off during what?",
-        "options": ["Mental health crises", "Weather emergencies", "Family illness", "Public transport strikes"],
-        "correct_answer": "Weather emergencies",
-        "points": 200
-      },
-      {
-        "id": "esp25-4",
-        "question": "In the 2025 UEFA Nations League final, Spain lost on penalties to which country?",
-        "options": ["France", "Germany", "Portugal", "Italy"],
-        "correct_answer": "Portugal",
-        "points": 150
-      },
-      {
         "id": "esp25-5",
         "question": "Which Madrid stadium hosted Spain's first official NFL game in 2025?",
         "options": ["Wanda Metropolitano", "Santiago Bernabéu", "Cívitas Metropolitano", "Estadio Olímpico"],
         "correct_answer": "Santiago Bernabéu",
         "points": 150
-      },
+      }
+    ],
+    "Música + Cine": [
       {
-        "id": "esp25-6",
-        "question": "In September 2025, Spain became one of the first countries to impose a total weapons embargo on which country?",
-        "options": ["Russia", "Iran", "Israel", "North Korea"],
-        "correct_answer": "Israel",
+        "id": "mc1",
+        "question": "How many languages does Rosalía speak on her album Lux?",
+        "options": ["Four", "Eight", "13", "17"],
+        "correct_answer": "13",
         "points": 200
+      }
+    ],
+    "Este Año": [
+      {
+        "id": "ea1",
+        "question": "What was the name of the Chinese AI app that rapidly became the most downloaded free app in the US in January, sparking a tech-stock dive?",
+        "options": ["DeepSeek", "DeepMind", "DeepThought", "DeepHeat"],
+        "correct_answer": "DeepSeek",
+        "points": 150
       },
       {
-        "id": "esp25-7",
-        "question": "2025 became Spain's worst year for what natural disaster in three decades?",
-        "options": ["Earthquakes", "Floods", "Forest fires", "Droughts"],
-        "correct_answer": "Forest fires",
+        "id": "ea2",
+        "question": "What is the name of Nasa's programme to return US astronauts to the moon?",
+        "options": ["Horizon", "Artemis", "Intrepid", "Elder One"],
+        "correct_answer": "Artemis",
+        "points": 150
+      }
+    ],
+    "María": [
+      {
+        "id": "maria1",
+        "question": "What is María's favourite food?",
+        "options": ["Pizza", "Steak", "Sushi", "Pasta"],
+        "correct_answer": "Steak",
+        "points": 100
+      },
+      {
+        "id": "maria2",
+        "question": "What is María's favourite colour?",
+        "options": ["Blue", "Purple", "Orange", "Green"],
+        "correct_answer": "Orange",
+        "points": 100
+      },
+      {
+        "id": "maria3",
+        "question": "What is María's favourite dish from Hanoi restaurant?",
+        "options": ["Rice with prawns and curry", "Pho bo", "Spring rolls", "Bun cha"],
+        "correct_answer": "Rice with prawns and curry",
         "points": 150
       }
     ]
