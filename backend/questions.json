@@ -146,13 +146,6 @@
         "points": 150
       },
       {
-        "id": "gk7",
-        "question": "¿Qué significa \"HTTP\" en una dirección web?",
-        "options": ["Protocolo de Transferencia de HiperTexto", "Protocolo de Transmisión de HiperTexto", "Protocolo de Transferencia de Alta Tecnología", "Proceso de Transferencia de HiperTecnología"],
-        "correct_answer": "Protocolo de Transferencia de HiperTexto",
-        "points": 100
-      },
-      {
         "id": "gk8",
         "question": "¿Cuántos elementos hay en la tabla periódica?",
         "options": ["92", "103", "118", "126"],
@@ -174,23 +167,9 @@
         "points": 150
       },
       {
-        "id": "gk11",
-        "question": "¿Cuál es el único pájaro capaz de volar hacia atrás?",
-        "options": ["El Martín Pescador", "El Colibrí", "El Vencejo", "El Pájaro Carpintero"],
-        "correct_answer": "El Colibrí",
-        "points": 100
-      },
-      {
-        "id": "gk12",
-        "question": "Tu cerebro representa solo el 2% de tu peso corporal total. ¿Qué porcentaje de tu energía diaria (calorías) consume?",
-        "options": ["10%", "15%", "20%", "25%"],
-        "correct_answer": "20%",
-        "points": 150
-      },
-      {
         "id": "gk13",
         "question": "¿Qué animal puede \"respirar\" por el trasero (cloaca) para sobrevivir bajo el agua durante la hibernación invernal?",
-        "options": ["La Tortuga de Caja", "La Tortuga Pintada", "La Tortuga Mordedora", "El Galápago de Orejas Rojas"],
+        "options": ["Javier", "La Tortuga Pintada", "Delfín mular", "Pulpo gigante del Pacífico"],
         "correct_answer": "La Tortuga Pintada",
         "points": 200
       },
