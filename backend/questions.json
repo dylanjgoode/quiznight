@@ -77,7 +77,7 @@
         "id": "maria3",
         "question": "¿Cuál es el plato favorito de María del restaurante Hanoi?",
         "options": ["Arroz con gambas al curry", "Arroz con pollo al curry", "Rollitos de primavera", "Nido de pollo"],
-        "correct_answer": "Arroz con gambas y curry",
+        "correct_answer": "Arroz con gambas al curry",
         "points": 150
       },
       {
