@@ -44,11 +44,23 @@ export default function Leaderboard({
     setEditScore('');
   };
 
+  const hasScores = players.some((player) => player.score > 0);
+
   return (
     <div className="bg-[#1A1A1A]/80 rounded-xl p-4 border border-[#FFD700]/30">
       <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
         <span>🏆</span> Clasificación
       </h2>
+
+      {hasScores && (
+        <div className="relative w-full max-w-[200px] mx-auto rounded-xl overflow-hidden border-2 border-[#FFD700]/50 mb-4">
+          <img
+            src="/images/busterleaderboard.gif"
+            alt="Buster celebrating"
+            className="w-full h-auto"
+          />
+        </div>
+      )}
 
       {players.length === 0 ? (
         <div className="text-center py-4">
