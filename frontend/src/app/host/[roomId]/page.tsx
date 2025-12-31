@@ -12,6 +12,7 @@ import BoatRace from '@/components/BoatRace';
 import Timer from '@/components/Timer';
 import QuestionCard from '@/components/QuestionCard';
 import ScorePopup, { type ScoreChange } from '@/components/ScorePopup';
+import WinnerScreen from '@/components/WinnerScreen';
 import confetti from 'canvas-confetti';
 
 interface QuestionsData {
@@ -46,6 +47,8 @@ export default function HostGame() {
   const [miniGameActive, setMiniGameActive] = useState(false);
   const [miniGamePositions, setMiniGamePositions] = useState<Record<string, MiniGamePosition>>({});
   const [miniGameWinners, setMiniGameWinners] = useState<string[]>([]);
+  // Game ended state
+  const [gameEnded, setGameEnded] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/api/questions`)
@@ -285,6 +288,14 @@ export default function HostGame() {
     setScoreChanges((prev) => prev.filter((change) => change.id !== id));
   }, []);
 
+  const endGame = () => {
+    setGameEnded(true);
+  };
+
+  const handlePlayAgain = () => {
+    window.location.href = '/';
+  };
+
   if (!isConnected) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -294,6 +305,11 @@ export default function HostGame() {
         </div>
       </div>
     );
+  }
+
+  // Show winner screen when game ends
+  if (gameEnded) {
+    return <WinnerScreen players={players} onPlayAgain={handlePlayAgain} />;
   }
 
   const categoryQuestions = currentCategory ? questions.categories[currentCategory] || [] : [];
@@ -346,6 +362,12 @@ export default function HostGame() {
               <option value={60}>60s</option>
             </select>
           </div>
+          <button
+            onClick={endGame}
+            className="px-4 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
+          >
+            Terminar juego
+          </button>
           <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
         </div>
       </div>

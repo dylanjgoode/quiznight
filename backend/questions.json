@@ -167,42 +167,22 @@
         "points": 150
       },
       {
-        "id": "gk13",
+        "id": "gk11",
         "question": "¿Qué animal puede \"respirar\" por el trasero (cloaca) para sobrevivir bajo el agua durante la hibernación invernal?",
         "options": ["Javier", "La Tortuga Pintada", "Delfín mular", "Pulpo gigante del Pacífico"],
         "correct_answer": "La Tortuga Pintada",
         "points": 200
       },
+
       {
-        "id": "gk14",
-        "question": "Cuando comes una fruta—como un melocotón o una sandía—biológicamente hablando, ¿qué parte de la anatomía de la planta estás comiendo?",
-        "options": ["La Vaina de Semillas", "El Ovario", "El Pericarpio", "El Receptáculo"],
-        "correct_answer": "El Ovario",
-        "points": 200
-      },
-      {
-        "id": "gk15",
+        "id": "gk12",
         "question": "Si desenrollaras todo el ADN de un solo cuerpo humano y lo estiraras de punta a punta, ¿hasta dónde llegaría?",
         "options": ["Unos 1.600 millones de km (de la Tierra a Saturno)", "Unos 16.000 millones de km (de la Tierra a Plutón y vuelta)", "Unos 160 millones de km (de la Tierra al Sol)", "Unos 380.000 km (de la Tierra a la Luna)"],
         "correct_answer": "Unos 16.000 millones de km (de la Tierra a Plutón y vuelta)",
         "points": 200
       },
       {
-        "id": "gk16",
-        "question": "¿Qué fruta tiene las semillas por fuera?",
-        "options": ["La Frambuesa", "La Fresa", "La Mora", "El Kiwi"],
-        "correct_answer": "La Fresa",
-        "points": 100
-      },
-      {
-        "id": "gk17",
-        "question": "¿Cuál era el nombre de la aplicación china de IA que se convirtió rápidamente en la aplicación gratuita más descargada en EE.UU. en enero, provocando una caída en las acciones tecnológicas?",
-        "options": ["DeepSeek", "DeepMind", "DeepThought", "DeepHeat"],
-        "correct_answer": "DeepSeek",
-        "points": 150
-      },
-      {
-        "id": "gk18",
+        "id": "gk13",
         "question": "¿Cómo se llama el programa de la NASA para devolver astronautas estadounidenses a la Luna?",
         "options": ["Horizon", "Artemis", "Intrepid", "Elder One"],
         "correct_answer": "Artemis",
