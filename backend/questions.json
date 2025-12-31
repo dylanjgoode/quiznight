@@ -238,9 +238,9 @@
         "audio_file": "Como-Camarón-by-Estopa.mp3",
         "options": [
           "Como Camarón - Estopa",
-          "La Raja de Tu Falda - Estopa",
-          "Vino Tinto - Estopa",
-          "Tu Calorro - Estopa"
+          "La Casa Por El Tejado - Fito y los Fitipaldis",
+          "Stand By - Extremoduro",
+          "Caminando Por La Vida - Melendi"
         ],
         "correct_answer": "Como Camarón - Estopa",
         "points": 100
@@ -252,9 +252,9 @@
         "audio_file": "bomba-by-king-africa.mp3",
         "options": [
           "Bomba - King Africa",
-          "La Bomba - Azul Azul",
-          "Bombón - Daddy Yankee",
-          "Boom Boom - Vengaboys"
+          "La Bomba - Prince Africa",
+          "Bombón - King Negro",
+          "Boom Boom - King Morro"
         ],
         "correct_answer": "Bomba - King Africa",
         "points": 100
@@ -266,9 +266,9 @@
         "audio_file": "good-times-by-jungle.mp3",
         "options": [
           "Good Times - Jungle",
-          "Busy Earnin' - Jungle",
-          "Happy Man - Jungle",
-          "Keep Moving - Jungle"
+          "Couldn’t Love You More - NEIL FRANCIS",
+          "Get Lucky - Daft Punk",
+          "24k Magic - Bruno Mars"
         ],
         "correct_answer": "Good Times - Jungle",
         "points": 150
@@ -280,9 +280,9 @@
         "audio_file": "i-want-to-break-free-by-queen.mp3",
         "options": [
           "I Want to Break Free - Queen",
-          "Don't Stop Me Now - Queen",
-          "Somebody to Love - Queen",
-          "Radio Ga Ga - Queen"
+          "Smooth Criminal - Micheal Jackson",
+          "Tiny Dancer - Elton John",
+          "Gimme! Gimme! Gimme! - ABBA"
         ],
         "correct_answer": "I Want to Break Free - Queen",
         "points": 100
@@ -295,8 +295,8 @@
         "options": [
           "Lollipop - MIKA",
           "Grace Kelly - MIKA",
-          "Love Today - MIKA",
-          "Relax, Take It Easy - MIKA"
+          "Sorry - Justin Bieber",
+          "Watermelon Sugar - Harry Styles"
         ],
         "correct_answer": "Lollipop - MIKA",
         "points": 100
