@@ -10,7 +10,7 @@ interface WinnerScreenProps {
 }
 
 export default function WinnerScreen({ players, onPlayAgain }: WinnerScreenProps) {
-  const [phase, setPhase] = useState<'drumroll' | 'reveal' | 'celebration'>('drumroll');
+  const [phase, setPhase] = useState<'drumroll' | 'reveal' | 'video' | 'celebration'>('drumroll');
   const [showPodium, setShowPodium] = useState(false);
 
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
@@ -24,55 +24,59 @@ export default function WinnerScreen({ players, onPlayAgain }: WinnerScreenProps
       setPhase('reveal');
     }, 2000);
 
-    // Phase 2: Reveal winner (after 2s, show for 3s, then celebrate)
+    // Phase 2: Reveal winner (after 2s, show for 3s, then video)
     const revealTimer = setTimeout(() => {
-      setPhase('celebration');
-      // Trigger massive confetti
-      const duration = 5000;
-      const end = Date.now() + duration;
-
-      const frame = () => {
-        confetti({
-          particleCount: 7,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'],
-        });
-        confetti({
-          particleCount: 7,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'],
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-      frame();
-
-      // Big burst in center
-      confetti({
-        particleCount: 200,
-        spread: 100,
-        origin: { y: 0.4 },
-        colors: ['#FFD700', '#FFA500', '#FFEC8B'],
-      });
+      setPhase('video');
     }, 5000);
-
-    // Phase 3: Show podium after celebration starts
-    const podiumTimer = setTimeout(() => {
-      setShowPodium(true);
-    }, 7000);
 
     return () => {
       clearTimeout(drumrollTimer);
       clearTimeout(revealTimer);
-      clearTimeout(podiumTimer);
     };
   }, []);
+
+  // Handle video ending - transition to celebration
+  const handleVideoEnd = () => {
+    setPhase('celebration');
+    // Trigger massive confetti
+    const duration = 5000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 7,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'],
+      });
+      confetti({
+        particleCount: 7,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'],
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+
+    // Big burst in center
+    confetti({
+      particleCount: 200,
+      spread: 100,
+      origin: { y: 0.4 },
+      colors: ['#FFD700', '#FFA500', '#FFEC8B'],
+    });
+
+    // Show podium after a short delay
+    setTimeout(() => {
+      setShowPodium(true);
+    }, 2000);
+  };
 
   return (
     <div className="fixed inset-0 bg-[#0A0A0A] z-50 flex flex-col items-center justify-center overflow-hidden">
@@ -120,6 +124,27 @@ export default function WinnerScreen({ players, onPlayAgain }: WinnerScreenProps
                 {winner?.score || 0} puntos
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Video Phase */}
+        {phase === 'video' && (
+          <div className="animate-scale-in flex flex-col items-center">
+            <video
+              autoPlay
+              playsInline
+              onEnded={handleVideoEnd}
+              className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl shadow-[#FFD700]/30"
+            >
+              <source src="/images/maria-congrats.mp4" type="video/mp4" />
+            </video>
+            {/* Skip button */}
+            <button
+              onClick={handleVideoEnd}
+              className="mt-6 px-6 py-2 text-white/60 hover:text-white transition-colors text-sm"
+            >
+              Saltar video →
+            </button>
           </div>
         )}
 
