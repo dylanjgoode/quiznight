@@ -35,14 +35,14 @@ export default function FirstBuzzAlert({ playerName, show, onComplete }: FirstBu
     <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
       {/* Background flash */}
       <div
-        className={`absolute inset-0 bg-[#FFD700] transition-opacity duration-200 ${
+        className={`absolute inset-0 bg-[#FFD700] transition-opacity duration-100 ${
           phase === 'enter' || phase === 'show' ? 'opacity-20' : 'opacity-0'
         }`}
       />
 
       {/* Main alert */}
       <div
-        className={`relative transform transition-all duration-300 ${
+        className={`relative transform transition-all duration-150 ${
           phase === 'enter' ? 'scale-0 opacity-0' : ''
         } ${phase === 'show' ? 'scale-100 opacity-100' : ''} ${
           phase === 'exit' ? 'scale-110 opacity-0' : ''

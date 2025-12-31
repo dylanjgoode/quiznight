@@ -31,9 +31,33 @@ Real-time multiplayer quiz game with buzzer functionality for New Year's Eve par
 | `frontend/src/components/FirstBuzzAlert.tsx` | Dramatic first buzz animation |
 | `frontend/src/components/ScorePopup.tsx` | Floating score change indicators |
 | `frontend/src/components/Leaderboard.tsx` | Player rankings (shows party dog when empty) |
+| `frontend/src/components/BoatRace.tsx` | Pre-game boat race mini-game visualization |
+| `frontend/src/components/Sparkles.tsx` | Animated sparkle background effect |
+| `frontend/src/components/QuestionCard.tsx` | Question display with music player support |
 | `frontend/public/images/party_dog.mp4` | Mascot video |
+| `frontend/public/music/*.mp3` | Audio files for music questions |
 
 ## Game Features
+
+### Boat Race Mini-Game
+Pre-game activity while waiting for players to join:
+- Players tap the buzzer button to row their boat across a river
+- Each tap moves the boat forward 10%, but a "tide" slowly pulls boats back
+- First 2 players to cross the finish line get +50 bonus points
+- Mini-game automatically ends when the host starts the first question
+
+### Music Questions
+Questions can have `type: 'music'` with an `audio_file` field:
+- Audio plays automatically when question starts
+- Player interface shows play/pause and seek controls
+- Used for "guess the song" style questions
+
+### Question Categories
+Current categories in `questions.json`:
+- **Historia de España**: Spanish history questions
+- **María**: Custom category (personalized questions)
+- **Cultura General**: General knowledge
+- **Música**: Music identification questions (audio-based)
 
 ### Scoring System
 Points are scaled based on buzz position:
@@ -43,6 +67,7 @@ Points are scaled based on buzz position:
 - **4th+**: 25% of points
 
 ### Host UI Features
+- **Boat Race Display**: Shows all players' boats racing before first question
 - **Question Progress Bar**: Visual indicator showing question X of Y
 - **First Buzz Alert**: Full-screen dramatic animation when first player buzzes
 - **Score Popups**: Floating +/- indicators when points are awarded
@@ -50,11 +75,14 @@ Points are scaled based on buzz position:
 - **Quick Select**: "Select All ✓" / "Select All ✗" buttons
 - **Auto-Advance**: "Next Question" automatically starts the next question
 - **Party Dog**: Shows in leaderboard while waiting for players
+- **Sparkles Background**: Animated golden sparkle effect
 
 ### Player UI Features
+- **Boat Race**: Tap buzzer to row before questions start (first 2 to finish get +50)
 - Large buzzer button with haptic feedback
 - Score and position display
 - Points received animation (+100 / -50)
+- Music player controls for music questions
 - Leaderboard modal
 
 ## Local Development
@@ -112,15 +140,17 @@ https://quiznight-eight.vercel.app,https://quiznight-dw5zeelws-dylanjgoodes-proj
 - `init`, `player_joined`, `player_disconnected`, `player_buzzed`
 - `timer_tick`, `timer_expired`, `leaderboard_update`
 - `category_selected`, `question_started`, `answer_revealed`
+- `mini_game_update`, `mini_game_ended`
 
 ### Player receives:
 - `init`, `buzzer_active`, `buzzer_locked`, `buzz_confirmed`
 - `timer_tick`, `leaderboard_update`, `question_cleared`, `kicked`
+- `mini_game_update`, `mini_game_ended`, `mini_game_bonus`
 
 ### Host sends:
 - `select_category`, `start_question`, `stop_question`
 - `reveal_answer`, `award_points`, `adjust_score`, `next_question`
-- `set_timer`, `kick_player`
+- `set_timer`, `kick_player`, `end_mini_game`
 
 ## UI Components
 
@@ -132,14 +162,17 @@ https://quiznight-eight.vercel.app,https://quiznight-dw5zeelws-dylanjgoodes-proj
 - Back to home button (← arrow)
 - Room code display with copy link
 - Timer selector (10-60 seconds)
+- Boat race mini-game display (before first question)
 - Category selection with progress bar
-- Question card with answer options
+- Question card with answer options (supports music playback)
 - Buzzer feed with toggle scoring
 - Leaderboard sidebar
 
 ### Player Page (`/play/[roomId]`)
 - Back to home button
 - Score and position header
+- Boat race mini-game (tap buzzer to row)
 - Large buzzer button (changes state: waiting/active/buzzed)
+- Music player controls (for music questions)
 - Timer display
 - Leaderboard modal

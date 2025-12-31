@@ -5,7 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { WS_URL } from '@/lib/config';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useSounds } from '@/hooks/useSounds';
-import type { Player, WebSocketMessage, PlayerInitMessage, MiniGamePosition } from '@/lib/types';
+import type { Player, WebSocketMessage, PlayerInitMessage, MiniGamePosition, ScoringResult } from '@/lib/types';
 import Leaderboard from '@/components/Leaderboard';
 import BoatRace from '@/components/BoatRace';
 import confetti from 'canvas-confetti';
@@ -21,14 +21,16 @@ export default function PlayerGame() {
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [position, setPosition] = useState(0);
-  const [buzzerActive, setBuzzerActive] = useState(false);
-  const [hasBuzzed, setHasBuzzed] = useState(false);
-  const [buzzPosition, setBuzzPosition] = useState<number | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [awardedPlayer, setAwardedPlayer] = useState<string | null>(null);
   const [pointsReceived, setPointsReceived] = useState<number | null>(null);
+  // Answer selection state
+  const [questionActive, setQuestionActive] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [answerPosition, setAnswerPosition] = useState<number | null>(null);
+  const [answerLocked, setAnswerLocked] = useState(false);
+  const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   // Mini-game state
   const [miniGameActive, setMiniGameActive] = useState(false);
   const [miniGamePositions, setMiniGamePositions] = useState<Record<string, MiniGamePosition>>({});
@@ -51,7 +53,7 @@ export default function PlayerGame() {
             setPlayerId(playerInit.player_id);
             setScore(playerInit.score);
             setPosition(playerInit.position);
-            setBuzzerActive(playerInit.buzzer_active);
+            setQuestionActive(playerInit.buzzer_active || playerInit.question_active || false);
             setPlayers(playerInit.leaderboard);
             // Mini-game state
             if (playerInit.mini_game) {
@@ -61,40 +63,56 @@ export default function PlayerGame() {
             setMiniGameActive(playerInit.mini_game_active);
           }
           break;
+        case 'question_started':
+          // New question started - show answer options
+          setQuestionActive(true);
+          setSelectedAnswer(null);
+          setAnswerPosition(null);
+          setAnswerLocked(false);
+          setScoringResult(null);
+          if ('timer' in message) {
+            setTimerRemaining(message.timer);
+          }
+          playSound('start');
+          triggerHaptic();
+          break;
         case 'buzzer_active':
-          setBuzzerActive(true);
-          setHasBuzzed(false);
-          setBuzzPosition(null);
+          // Legacy support - treat as question_started
+          setQuestionActive(true);
+          setSelectedAnswer(null);
+          setAnswerPosition(null);
+          setAnswerLocked(false);
+          setScoringResult(null);
           playSound('start');
           triggerHaptic();
           break;
         case 'buzzer_locked':
-          setBuzzerActive(false);
+          setQuestionActive(false);
           break;
         case 'timer_tick':
           setTimerRemaining(message.remaining);
           break;
         case 'timer_expired':
-          setBuzzerActive(false);
+          setQuestionActive(false);
           break;
-        case 'buzz_confirmed':
-          setBuzzPosition(message.position);
-          setHasBuzzed(true);
+        case 'answer_confirmed':
+          // Answer was recorded
+          setAnswerPosition(message.position);
+          setAnswerLocked(true);
           playSound('buzzer');
           triggerHaptic();
           break;
-        case 'leaderboard_update':
-          setPlayers(message.leaderboard);
-          const myPlayer = message.leaderboard.find((p: Player) => p.id === playerId);
-          if (myPlayer) {
-            setScore(myPlayer.score);
-            setPosition(myPlayer.position);
-          }
-          if (message.awarded_player) {
-            setAwardedPlayer(message.awarded_player);
-            if (message.awarded_player === playerId && message.points) {
-              setPointsReceived(message.points);
-              if (message.points > 0) {
+        case 'answer_revealed':
+          // Auto-scoring complete - show results
+          setQuestionActive(false);
+          if (message.scoring_results && playerId) {
+            const myResult = message.scoring_results.find(
+              (r: ScoringResult) => r.player_id === playerId
+            );
+            if (myResult) {
+              setScoringResult(myResult);
+              setPointsReceived(myResult.points);
+              if (myResult.points > 0) {
                 playSound('celebration');
                 confetti({
                   particleCount: 150,
@@ -107,13 +125,44 @@ export default function PlayerGame() {
               }
               setTimeout(() => setPointsReceived(null), 3000);
             }
-            setTimeout(() => setAwardedPlayer(null), 2000);
+          }
+          if (message.leaderboard) {
+            setPlayers(message.leaderboard);
+            const myPlayer = message.leaderboard.find((p: Player) => p.id === playerId);
+            if (myPlayer) {
+              setScore(myPlayer.score);
+              setPosition(myPlayer.position);
+            }
+          }
+          break;
+        case 'leaderboard_update':
+          setPlayers(message.leaderboard);
+          const myPlayer = message.leaderboard.find((p: Player) => p.id === playerId);
+          if (myPlayer) {
+            setScore(myPlayer.score);
+            setPosition(myPlayer.position);
+          }
+          // Mini-game bonus points
+          if (message.awarded_player === playerId && message.points) {
+            setPointsReceived(message.points);
+            if (message.points > 0) {
+              playSound('celebration');
+              confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#FFD700', '#FFEC8B', '#FFA500', '#FF69B4'],
+              });
+            }
+            setTimeout(() => setPointsReceived(null), 3000);
           }
           break;
         case 'question_cleared':
-          setBuzzerActive(false);
-          setHasBuzzed(false);
-          setBuzzPosition(null);
+          setQuestionActive(false);
+          setSelectedAnswer(null);
+          setAnswerPosition(null);
+          setAnswerLocked(false);
+          setScoringResult(null);
           break;
         case 'kicked':
           router.push('/');
@@ -147,36 +196,53 @@ export default function PlayerGame() {
     { onMessage: handleMessage }
   );
 
-  const buzz = useCallback(() => {
-    // Work for both regular buzzer and mini-game
-    if (buzzerActive && !hasBuzzed) {
-      sendMessage({ type: 'buzz' });
-    } else if (miniGameActive && !buzzerActive) {
-      // Mini-game mode - can always press unless finished
+  // Submit answer (A, B, C, or D)
+  const submitAnswer = useCallback((answer: string) => {
+    if (!answerLocked && questionActive) {
+      setSelectedAnswer(answer);
+      sendMessage({ type: 'submit_answer', answer });
+    }
+  }, [answerLocked, questionActive, sendMessage]);
+
+  // Mini-game buzz (boat race only)
+  const miniGameBuzz = useCallback(() => {
+    if (miniGameActive && !questionActive) {
       const myPosition = playerId ? miniGamePositions[playerId] : null;
       if (!myPosition?.finished) {
         sendMessage({ type: 'buzz' });
         triggerHaptic();
       }
     }
-  }, [buzzerActive, hasBuzzed, miniGameActive, playerId, miniGamePositions, sendMessage]);
+  }, [miniGameActive, questionActive, playerId, miniGamePositions, sendMessage]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        const canBuzzRegular = buzzerActive && !hasBuzzed;
-        const myPosition = playerId ? miniGamePositions[playerId] : null;
-        const canBuzzMiniGame = miniGameActive && !buzzerActive && !myPosition?.finished;
-
-        if (canBuzzRegular || canBuzzMiniGame) {
+      // Number keys or A/B/C/D for answers
+      if (questionActive && !answerLocked) {
+        const keyMap: Record<string, string> = {
+          'KeyA': 'A', 'Digit1': 'A',
+          'KeyB': 'B', 'Digit2': 'B',
+          'KeyC': 'C', 'Digit3': 'C',
+          'KeyD': 'D', 'Digit4': 'D',
+        };
+        if (e.code in keyMap) {
           e.preventDefault();
-          buzz();
+          submitAnswer(keyMap[e.code]);
+        }
+      }
+      // Space for mini-game
+      if (e.code === 'Space') {
+        const myPosition = playerId ? miniGamePositions[playerId] : null;
+        const canBuzzMiniGame = miniGameActive && !questionActive && !myPosition?.finished;
+        if (canBuzzMiniGame) {
+          e.preventDefault();
+          miniGameBuzz();
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [buzzerActive, hasBuzzed, miniGameActive, playerId, miniGamePositions, buzz]);
+  }, [questionActive, answerLocked, miniGameActive, playerId, miniGamePositions, submitAnswer, miniGameBuzz]);
 
   if (!playerName) {
     router.push(`/join/${roomId}`);
@@ -237,7 +303,7 @@ export default function PlayerGame() {
 
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         {/* Mini-game boat race when waiting */}
-        {miniGameActive && !buzzerActive && (
+        {miniGameActive && !questionActive && !scoringResult && (
           <div className="w-full max-w-md mb-6">
             <BoatRace
               positions={miniGamePositions}
@@ -247,10 +313,11 @@ export default function PlayerGame() {
           </div>
         )}
 
-        {buzzerActive && (
-          <div className="mb-8">
+        {/* Timer during question */}
+        {questionActive && (
+          <div className="mb-6">
             <div
-              className={`text-6xl font-bold font-mono ${
+              className={`text-5xl font-bold font-mono ${
                 timerRemaining <= 3 ? 'text-red-500 animate-pulse' : 'text-[#FFD700]'
               }`}
             >
@@ -259,71 +326,114 @@ export default function PlayerGame() {
           </div>
         )}
 
-        {(() => {
+        {/* Answer Selection UI */}
+        {questionActive && !answerLocked && (
+          <div className="w-full max-w-sm">
+            <p className="text-center text-gray-400 mb-4 text-sm">Look at the big screen!</p>
+            <div className="grid grid-cols-2 gap-4">
+              {['A', 'B', 'C', 'D'].map((letter) => (
+                <button
+                  key={letter}
+                  onClick={() => submitAnswer(letter)}
+                  className="aspect-square rounded-2xl font-bold text-5xl md:text-6xl transition-all transform
+                    bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A]
+                    active:scale-95 hover:shadow-lg shadow-md"
+                >
+                  {letter}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Answer Locked - waiting for reveal */}
+        {answerLocked && !scoringResult && (
+          <div className="text-center">
+            <div className="text-7xl mb-4">
+              {answerPosition === 1 ? '🥇' : answerPosition === 2 ? '🥈' : answerPosition === 3 ? '🥉' : `#${answerPosition}`}
+            </div>
+            <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] font-bold text-5xl flex items-center justify-center mb-4">
+              {selectedAnswer}
+            </div>
+            <p className="text-[#FFD700] text-xl font-semibold">Answer locked!</p>
+            <p className="text-gray-400 mt-2">
+              {answerPosition === 1 ? 'First to answer!' : `Position #${answerPosition}`}
+            </p>
+          </div>
+        )}
+
+        {/* Scoring Result */}
+        {scoringResult && (
+          <div className={`text-center p-8 rounded-2xl ${
+            scoringResult.is_correct ? 'bg-green-500/20 border-2 border-green-500' : 'bg-red-500/20 border-2 border-red-500'
+          }`}>
+            <div className="text-7xl mb-4">
+              {scoringResult.is_correct ? '✓' : '✗'}
+            </div>
+            {scoringResult.answer && (
+              <p className="text-gray-300 mb-2">You answered: {scoringResult.answer}</p>
+            )}
+            {!scoringResult.answer && (
+              <p className="text-gray-400 mb-2">No answer submitted</p>
+            )}
+            <p className={`text-3xl font-bold ${
+              scoringResult.points > 0 ? 'text-green-400' : 'text-red-400'
+            }`}>
+              {scoringResult.points > 0 ? '+' : ''}{scoringResult.points} points
+            </p>
+          </div>
+        )}
+
+        {/* Mini-game button when no question */}
+        {!questionActive && !scoringResult && (() => {
           const myPosition = playerId ? miniGamePositions[playerId] : null;
-          const isMiniGameMode = miniGameActive && !buzzerActive;
+          const isMiniGameMode = miniGameActive;
           const hasFinishedRace = myPosition?.finished;
 
+          if (isMiniGameMode) {
+            return (
+              <button
+                onClick={miniGameBuzz}
+                disabled={hasFinishedRace}
+                className={`w-64 h-64 md:w-80 md:h-80 rounded-full font-bold text-3xl transition-all transform ${
+                  !hasFinishedRace
+                    ? 'bg-gradient-to-br from-[#4a90d9] to-[#2563eb] text-white active:scale-95 shadow-2xl'
+                    : 'bg-green-600 text-white'
+                }`}
+              >
+                {hasFinishedRace ? (
+                  <div className="flex flex-col items-center">
+                    <span className="text-5xl mb-2">🏁</span>
+                    <span className="text-xl">Finished!</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <span className="text-5xl mb-2">🚣</span>
+                    <span>ROW!</span>
+                  </div>
+                )}
+              </button>
+            );
+          }
+
           return (
-            <button
-              onClick={buzz}
-              disabled={buzzerActive ? hasBuzzed : (!isMiniGameMode || hasFinishedRace)}
-              className={`w-64 h-64 md:w-80 md:h-80 rounded-full font-bold text-3xl transition-all transform ${
-                buzzerActive && !hasBuzzed
-                  ? 'bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] active:scale-95 buzzer-active shadow-2xl'
-                  : hasBuzzed
-                  ? buzzPosition === 1
-                    ? 'bg-green-500 text-white'
-                    : 'bg-blue-500 text-white'
-                  : isMiniGameMode && !hasFinishedRace
-                  ? 'bg-gradient-to-br from-[#4a90d9] to-[#2563eb] text-white active:scale-95 shadow-2xl'
-                  : isMiniGameMode && hasFinishedRace
-                  ? 'bg-green-600 text-white'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              {hasBuzzed ? (
-                <div className="flex flex-col items-center">
-                  <span className="text-5xl mb-2">
-                    {buzzPosition === 1 ? '🥇' : `#${buzzPosition}`}
-                  </span>
-                  <span className="text-xl">
-                    {buzzPosition === 1 ? 'First!' : 'Buzzed!'}
-                  </span>
-                </div>
-              ) : buzzerActive ? (
-                <div className="flex flex-col items-center">
-                  <span className="text-5xl mb-2">🔔</span>
-                  <span>BUZZ!</span>
-                </div>
-              ) : isMiniGameMode && !hasFinishedRace ? (
-                <div className="flex flex-col items-center">
-                  <span className="text-5xl mb-2">🚣</span>
-                  <span>ROW!</span>
-                </div>
-              ) : isMiniGameMode && hasFinishedRace ? (
-                <div className="flex flex-col items-center">
-                  <span className="text-5xl mb-2">🏁</span>
-                  <span className="text-xl">Finished!</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <span className="text-4xl mb-2">⏳</span>
-                  <span className="text-xl">Wait...</span>
-                </div>
-              )}
-            </button>
+            <div className="text-center">
+              <div className="text-6xl mb-4">⏳</div>
+              <p className="text-gray-400 text-xl">Waiting for next question...</p>
+            </div>
           );
         })()}
 
-        <p className="mt-8 text-gray-400 text-center">
-          {buzzerActive && !hasBuzzed
-            ? 'Tap the button or press SPACE to buzz!'
-            : hasBuzzed
-            ? 'Waiting for the host...'
-            : miniGameActive && !buzzerActive
-            ? 'Spam the button to row your boat across!'
-            : 'Watch the host screen for the question!'}
+        <p className="mt-8 text-gray-400 text-center text-sm">
+          {questionActive && !answerLocked
+            ? 'Tap an answer or press A/B/C/D!'
+            : answerLocked && !scoringResult
+            ? 'Waiting for the host to reveal...'
+            : scoringResult
+            ? 'Get ready for the next question!'
+            : miniGameActive && !questionActive
+            ? 'Spam the button to row your boat!'
+            : 'Watch the host screen!'}
         </p>
       </div>
 
@@ -350,7 +460,6 @@ export default function PlayerGame() {
             </div>
             <Leaderboard
               players={players}
-              awardedPlayer={awardedPlayer}
               currentPlayerId={playerId || undefined}
             />
           </div>

@@ -5,13 +5,12 @@ import { useParams } from 'next/navigation';
 import { WS_URL, API_URL } from '@/lib/config';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { useSounds } from '@/hooks/useSounds';
-import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage, MiniGamePosition } from '@/lib/types';
+import type { Player, Question, BuzzEntry, WebSocketMessage, HostInitMessage, MiniGamePosition, ScoringResult } from '@/lib/types';
 import Leaderboard from '@/components/Leaderboard';
 import BuzzerFeed from '@/components/BuzzerFeed';
 import BoatRace from '@/components/BoatRace';
 import Timer from '@/components/Timer';
 import QuestionCard from '@/components/QuestionCard';
-import FirstBuzzAlert from '@/components/FirstBuzzAlert';
 import ScorePopup, { type ScoreChange } from '@/components/ScorePopup';
 import confetti from 'canvas-confetti';
 
@@ -36,11 +35,13 @@ export default function HostGame() {
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [buzzerActive, setBuzzerActive] = useState(false);
   const [answerRevealed, setAnswerRevealed] = useState(false);
-  const [awardedPlayers, setAwardedPlayers] = useState<Set<string>>(new Set());
   const [lastAwardedPlayer, setLastAwardedPlayer] = useState<string | null>(null);
-  const [firstBuzzer, setFirstBuzzer] = useState<string | null>(null);
-  const [showFirstBuzzAlert, setShowFirstBuzzAlert] = useState(false);
   const [scoreChanges, setScoreChanges] = useState<ScoreChange[]>([]);
+  // Answer selection state
+  const [answerCount, setAnswerCount] = useState(0);
+  const [totalPlayers, setTotalPlayers] = useState(0);
+  const [scoringResults, setScoringResults] = useState<ScoringResult[]>([]);
+  const [correctLetter, setCorrectLetter] = useState<string | null>(null);
   // Mini-game state
   const [miniGameActive, setMiniGameActive] = useState(false);
   const [miniGamePositions, setMiniGamePositions] = useState<Record<string, MiniGamePosition>>({});
@@ -82,12 +83,16 @@ export default function HostGame() {
           setPlayers(message.leaderboard);
           break;
         case 'player_buzzed':
+          // Legacy support - still used for mini-game?
           setBuzzerQueue(message.buzzer_queue);
           playSound('buzzer');
-          // Show dramatic alert for first buzz
-          if (message.buzzer_queue.length === 1) {
-            setFirstBuzzer(message.buzzer_queue[0].name);
-            setShowFirstBuzzAlert(true);
+          break;
+        case 'answer_count_update':
+          // New: update answer count
+          setAnswerCount(message.count);
+          setTotalPlayers(message.total_players);
+          if (message.count === 1) {
+            playSound('buzzer');  // Sound on first answer
           }
           break;
         case 'timer_tick':
@@ -98,19 +103,17 @@ export default function HostGame() {
           break;
         case 'timer_expired':
           setBuzzerActive(false);
-          setBuzzerQueue(message.buzzer_queue);
           break;
         case 'leaderboard_update':
           setPlayers(message.leaderboard);
+          // Handle mini-game bonus points (boat race)
           if (message.awarded_player && message.points) {
             const awardedId = message.awarded_player as string;
             const awardedPlayerData = message.leaderboard.find(
               (p: Player) => p.id === awardedId
             );
-            // Track awarded player
-            setAwardedPlayers(prev => new Set(prev).add(awardedId));
 
-            // Add floating score popup
+            // Add floating score popup for mini-game bonus
             const scoreChange: ScoreChange = {
               id: `${awardedId}-${Date.now()}`,
               playerId: awardedId,
@@ -130,19 +133,55 @@ export default function HostGame() {
                 colors: ['#FFD700', '#FFEC8B', '#FFA500'],
               });
               setTimeout(() => setLastAwardedPlayer(null), 2000);
-            } else {
-              playSound('wrong');
             }
           }
           break;
         case 'answer_revealed':
           setAnswerRevealed(true);
+          setBuzzerActive(false);
+          if (message.scoring_results) {
+            setScoringResults(message.scoring_results);
+            // Show score popups for all players
+            message.scoring_results.forEach((result: ScoringResult) => {
+              const scoreChange: ScoreChange = {
+                id: `${result.player_id}-${Date.now()}-${Math.random()}`,
+                playerId: result.player_id,
+                playerName: result.name,
+                points: result.points,
+                timestamp: Date.now(),
+              };
+              setScoreChanges((prev) => [...prev, scoreChange]);
+            });
+            // Play celebration sound if anyone got it right
+            const correctCount = message.scoring_results.filter((r: ScoringResult) => r.is_correct).length;
+            if (correctCount > 0) {
+              playSound('correct');
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FFD700', '#FFEC8B', '#FFA500'],
+              });
+            } else {
+              playSound('wrong');
+            }
+          }
+          if (message.correct_letter) {
+            setCorrectLetter(message.correct_letter);
+          }
+          if (message.leaderboard) {
+            setPlayers(message.leaderboard);
+          }
           break;
         case 'question_cleared':
           setCurrentQuestion(null);
           setBuzzerQueue([]);
           setAnswerRevealed(false);
           setBuzzerActive(false);
+          setAnswerCount(0);
+          setTotalPlayers(0);
+          setScoringResults([]);
+          setCorrectLetter(null);
           break;
         case 'mini_game_update':
           setMiniGamePositions(message.positions);
@@ -177,9 +216,10 @@ export default function HostGame() {
     setBuzzerQueue([]);
     setAnswerRevealed(false);
     setBuzzerActive(true);
-    setFirstBuzzer(null);
-    setShowFirstBuzzAlert(false);
-    setAwardedPlayers(new Set());
+    setAnswerCount(0);
+    setTotalPlayers(players.filter(p => p.connected).length);
+    setScoringResults([]);
+    setCorrectLetter(null);
     sendMessage({ type: 'start_question', question });
     playSound('start');
   };
@@ -210,9 +250,9 @@ export default function HostGame() {
     // Clear current state
     setBuzzerQueue([]);
     setAnswerRevealed(false);
-    setFirstBuzzer(null);
-    setShowFirstBuzzAlert(false);
-    setAwardedPlayers(new Set());
+    setAnswerCount(0);
+    setScoringResults([]);
+    setCorrectLetter(null);
     setQuestionIndex(nextIndex);
 
     if (nextIndex < categoryQuestions.length) {
@@ -220,6 +260,7 @@ export default function HostGame() {
       const nextQ = categoryQuestions[nextIndex];
       setCurrentQuestion(nextQ);
       setBuzzerActive(true);
+      setTotalPlayers(players.filter(p => p.connected).length);
       sendMessage({ type: 'start_question', question: nextQ });
       playSound('start');
     } else {
@@ -260,13 +301,6 @@ export default function HostGame() {
 
   return (
     <div className="min-h-screen p-4 lg:p-6">
-      {/* First Buzz Alert Overlay */}
-      <FirstBuzzAlert
-        playerName={firstBuzzer || ''}
-        show={showFirstBuzzAlert}
-        onComplete={() => setShowFirstBuzzAlert(false)}
-      />
-
       {/* Score Change Popups */}
       <ScorePopup changes={scoreChanges} onRemove={removeScoreChange} />
 
@@ -412,8 +446,10 @@ export default function HostGame() {
             buzzerQueue={buzzerQueue}
             currentQuestion={currentQuestion}
             answerRevealed={answerRevealed}
-            awardedPlayers={awardedPlayers}
-            onAwardPoints={awardPoints}
+            answerCount={answerCount}
+            totalPlayers={totalPlayers}
+            scoringResults={scoringResults}
+            correctLetter={correctLetter}
           />
         </div>
 

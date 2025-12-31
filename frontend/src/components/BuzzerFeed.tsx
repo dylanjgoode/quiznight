@@ -1,226 +1,162 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { BuzzEntry, Question } from '@/lib/types';
+import type { BuzzEntry, Question, ScoringResult } from '@/lib/types';
 
 interface BuzzerFeedProps {
-  buzzerQueue: BuzzEntry[];
+  buzzerQueue: BuzzEntry[];  // Legacy, kept for compatibility
   currentQuestion: Question | null;
   answerRevealed: boolean;
-  awardedPlayers: Set<string>;
-  onAwardPoints: (playerId: string, points: number) => void;
+  answerCount: number;
+  totalPlayers: number;
+  scoringResults: ScoringResult[];
+  correctLetter: string | null;
 }
 
-type Selection = 'correct' | 'wrong' | null;
-
-// Points multiplier based on buzz position
-const getPointsMultiplier = (position: number): number => {
-  switch (position) {
-    case 1: return 1.0;    // 100%
-    case 2: return 0.75;   // 75%
-    case 3: return 0.5;    // 50%
-    default: return 0.25;  // 25% for 4th and beyond
-  }
-};
-
 export default function BuzzerFeed({
-  buzzerQueue,
   currentQuestion,
   answerRevealed,
-  awardedPlayers,
-  onAwardPoints,
+  answerCount,
+  totalPlayers,
+  scoringResults,
+  correctLetter,
 }: BuzzerFeedProps) {
-  const [selections, setSelections] = useState<Record<string, Selection>>({});
-
-  // Reset selections when question changes
-  useEffect(() => {
-    setSelections({});
-  }, [currentQuestion]);
-
   if (!currentQuestion) {
     return null;
   }
 
-  const basePoints = currentQuestion.points || 100;
+  // Sort results: correct first, then by position
+  const sortedResults = [...scoringResults].sort((a, b) => {
+    if (a.is_correct !== b.is_correct) return a.is_correct ? -1 : 1;
+    return (a.position || 999) - (b.position || 999);
+  });
 
-  const toggleSelection = (playerId: string, selection: Selection) => {
-    setSelections(prev => ({
-      ...prev,
-      [playerId]: prev[playerId] === selection ? null : selection
-    }));
-  };
-
-  const applyAll = () => {
-    buzzerQueue.forEach(buzz => {
-      const selection = selections[buzz.player_id];
-      if (selection && !awardedPlayers.has(buzz.player_id)) {
-        const multiplier = getPointsMultiplier(buzz.position);
-        const earnPoints = Math.floor(basePoints * multiplier);
-        const penaltyPoints = Math.floor((basePoints / 2) * multiplier);
-
-        if (selection === 'correct') {
-          onAwardPoints(buzz.player_id, earnPoints);
-        } else {
-          onAwardPoints(buzz.player_id, -penaltyPoints);
-        }
-      }
-    });
-    setSelections({});
-  };
-
-  const selectAllCorrect = () => {
-    const newSelections: Record<string, Selection> = {};
-    buzzerQueue.forEach(buzz => {
-      if (!awardedPlayers.has(buzz.player_id)) {
-        newSelections[buzz.player_id] = 'correct';
-      }
-    });
-    setSelections(newSelections);
-  };
-
-  const selectAllWrong = () => {
-    const newSelections: Record<string, Selection> = {};
-    buzzerQueue.forEach(buzz => {
-      if (!awardedPlayers.has(buzz.player_id)) {
-        newSelections[buzz.player_id] = 'wrong';
-      }
-    });
-    setSelections(newSelections);
-  };
-
-  const clearSelections = () => {
-    setSelections({});
-  };
-
-  const hasSelections = Object.values(selections).some(s => s !== null);
-  const unawardedCount = buzzerQueue.filter(b => !awardedPlayers.has(b.player_id)).length;
+  const correctCount = scoringResults.filter(r => r.is_correct).length;
+  const wrongCount = scoringResults.filter(r => !r.is_correct && r.answer !== null).length;
+  const noAnswerCount = scoringResults.filter(r => r.answer === null).length;
 
   return (
     <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
       <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
-        <span>🔔</span> Buzzer Feed
+        <span>📝</span> Answers
       </h2>
 
-      {buzzerQueue.length === 0 ? (
-        <p className="text-gray-500 text-center py-4">No one has buzzed yet...</p>
+      {!answerRevealed ? (
+        // Before reveal: show count only
+        <div className="text-center py-8">
+          <div className="text-6xl font-bold text-[#FFD700] mb-2">
+            {answerCount} / {totalPlayers}
+          </div>
+          <p className="text-gray-400">players have answered</p>
+
+          {/* Progress bar */}
+          <div className="mt-4 h-3 bg-[#0A0A0A] rounded-full overflow-hidden max-w-xs mx-auto">
+            <div
+              className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] transition-all duration-300"
+              style={{ width: `${totalPlayers > 0 ? (answerCount / totalPlayers) * 100 : 0}%` }}
+            />
+          </div>
+
+          {totalPlayers > 0 && answerCount === 0 && (
+            <p className="text-gray-600 text-sm mt-4">Waiting for answers...</p>
+          )}
+
+          {answerCount > 0 && answerCount < totalPlayers && (
+            <p className="text-gray-600 text-sm mt-4">
+              Waiting for {totalPlayers - answerCount} more...
+            </p>
+          )}
+
+          {answerCount === totalPlayers && totalPlayers > 0 && (
+            <p className="text-green-400 text-sm mt-4">Everyone has answered!</p>
+          )}
+        </div>
       ) : (
-        <>
-          {/* Quick select buttons */}
-          {answerRevealed && unawardedCount > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              <button
-                onClick={selectAllCorrect}
-                className="text-xs bg-green-600/20 border border-green-600 text-green-400 px-3 py-1.5 rounded-lg hover:bg-green-600 hover:text-white transition-colors"
-              >
-                Select All ✓
-              </button>
-              <button
-                onClick={selectAllWrong}
-                className="text-xs bg-red-600/20 border border-red-600 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
-              >
-                Select All ✗
-              </button>
-              {hasSelections && (
-                <button
-                  onClick={clearSelections}
-                  className="text-xs bg-gray-600/20 border border-gray-600 text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-600 hover:text-white transition-colors"
+        // After reveal: show detailed results
+        <div className="space-y-3">
+          {sortedResults.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">No answers recorded</p>
+          ) : (
+            <>
+              {sortedResults.map((result) => (
+                <div
+                  key={result.player_id}
+                  className={`flex items-center justify-between p-4 rounded-lg transition-all ${
+                    result.is_correct
+                      ? 'bg-green-500/20 border-2 border-green-500'
+                      : result.answer === null
+                      ? 'bg-gray-500/20 border border-gray-600'
+                      : 'bg-red-500/20 border border-red-500'
+                  }`}
                 >
-                  Clear
-                </button>
+                  <div className="flex items-center gap-3">
+                    {result.position && (
+                      <span className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${
+                        result.position === 1 ? 'bg-[#FFD700] text-[#0A0A0A]' :
+                        result.position === 2 ? 'bg-gray-300 text-[#0A0A0A]' :
+                        result.position === 3 ? 'bg-amber-600 text-white' :
+                        'bg-gray-700 text-gray-300'
+                      }`}>
+                        {result.position}
+                      </span>
+                    )}
+                    {!result.position && (
+                      <span className="w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold bg-gray-700 text-gray-500">
+                        -
+                      </span>
+                    )}
+                    <div>
+                      <span className={`font-medium ${result.is_correct ? 'text-green-400' : 'text-white'}`}>
+                        {result.name}
+                      </span>
+                      <span className="ml-2 text-gray-400 text-sm">
+                        {result.answer ? (
+                          <>
+                            answered <span className={result.answer === correctLetter ? 'text-green-400 font-bold' : 'text-red-400'}>{result.answer}</span>
+                          </>
+                        ) : (
+                          <span className="text-gray-500">(no answer)</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className={`font-bold text-lg ${
+                    result.points > 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {result.points > 0 ? '+' : ''}{result.points}
+                  </span>
+                </div>
+              ))}
+            </>
+          )}
+
+          {/* Summary */}
+          {sortedResults.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-700 text-center">
+              <p className="text-gray-400">
+                <span className="text-green-400">{correctCount} correct</span>
+                {' · '}
+                <span className="text-red-400">{wrongCount} wrong</span>
+                {noAnswerCount > 0 && (
+                  <>
+                    {' · '}
+                    <span className="text-gray-500">{noAnswerCount} no answer</span>
+                  </>
+                )}
+              </p>
+              {correctLetter && (
+                <p className="text-[#FFD700] mt-2">
+                  Correct answer: <span className="font-bold">{correctLetter}</span>
+                </p>
               )}
             </div>
           )}
 
-          <div className="space-y-3">
-            {buzzerQueue.map((buzz, index) => {
-              const isFirst = index === 0;
-              const isAwarded = awardedPlayers.has(buzz.player_id);
-              const multiplier = getPointsMultiplier(buzz.position);
-              const earnPoints = Math.floor(basePoints * multiplier);
-              const penaltyPoints = Math.floor((basePoints / 2) * multiplier);
-              const selection = selections[buzz.player_id];
-
-              return (
-                <div
-                  key={`${buzz.player_id}-${buzz.timestamp}`}
-                  className={`flex items-center justify-between p-4 rounded-lg transition-all ${
-                    isFirst
-                      ? 'bg-[#FFD700]/20 border-2 border-[#FFD700]'
-                      : 'bg-[#0A0A0A]/50 border border-gray-700'
-                  } ${isAwarded ? 'opacity-50' : ''} ${
-                    selection === 'correct' ? 'ring-2 ring-green-500' : ''
-                  } ${selection === 'wrong' ? 'ring-2 ring-red-500' : ''}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${
-                        isFirst ? 'bg-[#FFD700] text-[#0A0A0A]' : 'bg-gray-700 text-gray-300'
-                      }`}
-                    >
-                      {buzz.position}
-                    </span>
-                    <div>
-                      <span className={`font-medium ${isFirst ? 'text-[#FFD700] text-lg' : 'text-white'}`}>
-                        {buzz.name}
-                      </span>
-                      {isFirst && !isAwarded && <span className="ml-2 text-[#FFEC8B] text-sm">First!</span>}
-                      {!isFirst && !isAwarded && (
-                        <span className="ml-2 text-gray-500 text-xs">
-                          ({Math.floor(multiplier * 100)}%)
-                        </span>
-                      )}
-                      {isAwarded && (
-                        <span className="ml-2 text-green-500 text-sm">✓ Done</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {answerRevealed && !isAwarded && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => toggleSelection(buzz.player_id, 'correct')}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                          selection === 'correct'
-                            ? 'bg-green-500 text-white scale-105'
-                            : 'bg-green-600/20 border border-green-600 text-green-400 hover:bg-green-600 hover:text-white'
-                        }`}
-                      >
-                        +{earnPoints}
-                      </button>
-                      <button
-                        onClick={() => toggleSelection(buzz.player_id, 'wrong')}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                          selection === 'wrong'
-                            ? 'bg-red-500 text-white scale-105'
-                            : 'bg-red-600/20 border border-red-600 text-red-400 hover:bg-red-600 hover:text-white'
-                        }`}
-                      >
-                        -{penaltyPoints}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Apply All Button */}
-          {answerRevealed && hasSelections && (
-            <button
-              onClick={applyAll}
-              className="w-full mt-4 py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0A0A0A] font-bold rounded-lg hover:opacity-90 transition-opacity text-lg"
-            >
-              Apply Points
-            </button>
-          )}
-
           {/* Points scale hint */}
-          {answerRevealed && unawardedCount > 0 && !hasSelections && (
-            <p className="text-gray-600 text-xs mt-4 text-center">
-              1st: 100% · 2nd: 75% · 3rd: 50% · 4th+: 25%
-            </p>
-          )}
-        </>
+          <p className="text-gray-600 text-xs mt-4 text-center">
+            Points scale: 1st = 100% · 2nd = 75% · 3rd = 50% · 4th+ = 25%
+          </p>
+        </div>
       )}
     </div>
   );

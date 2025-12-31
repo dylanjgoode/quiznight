@@ -23,6 +23,17 @@ export interface BuzzEntry {
   position: number;
 }
 
+// Answer selection scoring result
+export interface ScoringResult {
+  player_id: string;
+  name: string;
+  answer: string | null;
+  is_correct: boolean;
+  position: number | null;
+  multiplier: number | null;
+  points: number;
+}
+
 // Mini-game types
 export interface MiniGamePosition {
   name: string;
@@ -54,7 +65,8 @@ export type PlayerInitMessage = {
   name: string;
   score: number;
   position: number;
-  buzzer_active: boolean;
+  buzzer_active: boolean;  // deprecated, use question_active
+  question_active?: boolean;  // new: whether a question is active
   leaderboard: Player[];
   mini_game: MiniGameState;
   mini_game_active: boolean;
@@ -67,14 +79,16 @@ export type WebSocketMessage =
   | { type: 'player_disconnected'; player_id: string; name: string; leaderboard: Player[] }
   | { type: 'player_left'; player_id: string; leaderboard: Player[] }
   | { type: 'category_selected'; category: string }
-  | { type: 'question_started'; question: Question; timer: number }
-  | { type: 'buzzer_active'; timer: number }
+  | { type: 'question_started'; question?: Question; timer: number }  // question only for host
+  | { type: 'buzzer_active'; timer: number }  // deprecated
   | { type: 'buzzer_locked' }
   | { type: 'timer_tick'; remaining: number }
-  | { type: 'timer_expired'; buzzer_queue: BuzzEntry[] }
-  | { type: 'player_buzzed'; buzz: BuzzEntry; buzzer_queue: BuzzEntry[] }
-  | { type: 'buzz_confirmed'; position: number }
-  | { type: 'answer_revealed'; answer: string }
+  | { type: 'timer_expired'; submissions_count?: number; buzzer_queue?: BuzzEntry[] }
+  | { type: 'player_buzzed'; buzz: BuzzEntry; buzzer_queue: BuzzEntry[] }  // deprecated for questions
+  | { type: 'buzz_confirmed'; position: number }  // deprecated
+  | { type: 'answer_confirmed'; position: number; answer: string }  // new
+  | { type: 'answer_count_update'; count: number; total_players: number }  // new: host only
+  | { type: 'answer_revealed'; answer?: string; correct_answer?: string; correct_letter?: string; scoring_results?: ScoringResult[]; leaderboard?: Player[] }
   | { type: 'leaderboard_update'; leaderboard: Player[]; awarded_player?: string; points?: number }
   | { type: 'timer_updated'; seconds: number }
   | { type: 'question_cleared' }

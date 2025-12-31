@@ -43,7 +43,8 @@ class GameRoom:
         self.players: dict[str, dict] = {}  # player_id -> {name, score, ws, connected}
         self.current_question: Optional[dict] = None
         self.question_active = False
-        self.buzzer_queue: list[dict] = []  # [{player_id, name, timestamp}]
+        self.answer_submissions: dict[str, dict] = {}  # player_id -> {answer, timestamp, position}
+        self.submission_order: list[str] = []  # ordered list of player_ids by submission time
         self.timer_seconds = 15
         self.timer_task: Optional[asyncio.Task] = None
         self.current_category: Optional[str] = None
@@ -301,7 +302,8 @@ async def handle_host_message(room: GameRoom, data: dict):
 
             room.current_question = question_data
             room.question_active = True
-            room.buzzer_queue = []
+            room.answer_submissions = {}
+            room.submission_order = []
 
             # Notify host with full question
             await room.send_to_host({
@@ -310,9 +312,9 @@ async def handle_host_message(room: GameRoom, data: dict):
                 "timer": room.timer_seconds
             })
 
-            # Notify players that buzzer is active (no question text)
+            # Notify players that question started (they look at host screen for question)
             await room.broadcast_to_players({
-                "type": "buzzer_active",
+                "type": "question_started",
                 "timer": room.timer_seconds
             })
 
@@ -334,9 +336,81 @@ async def handle_host_message(room: GameRoom, data: dict):
 
     elif msg_type == "reveal_answer":
         if room.current_question:
-            await room.send_to_host({
+            correct_answer = room.current_question.get("correct_answer")
+            options = room.current_question.get("options", [])
+            base_points = room.current_question.get("points", 100)
+
+            # Find correct answer index (A, B, C, D)
+            correct_index = -1
+            for i, opt in enumerate(options):
+                if opt == correct_answer:
+                    correct_index = i
+                    break
+            correct_letter = chr(65 + correct_index) if correct_index >= 0 else None
+
+            # Position-based multipliers
+            multipliers = [1.0, 0.75, 0.5, 0.25]
+
+            # Calculate points for all players
+            scoring_results = []
+
+            # Score players who submitted answers
+            for player_id in room.submission_order:
+                if player_id not in room.players:
+                    continue
+                submission = room.answer_submissions[player_id]
+                position = submission["position"]
+                multiplier = multipliers[min(position - 1, 3)]
+                answer = submission["answer"]
+
+                is_correct = answer == correct_letter
+
+                if is_correct:
+                    points = int(base_points * multiplier)
+                else:
+                    points = -int((base_points / 2) * multiplier)
+
+                # Apply points
+                room.players[player_id]["score"] += points
+
+                scoring_results.append({
+                    "player_id": player_id,
+                    "name": room.players[player_id]["name"],
+                    "answer": answer,
+                    "is_correct": is_correct,
+                    "position": position,
+                    "multiplier": multiplier,
+                    "points": points
+                })
+
+            # Penalize players who didn't answer (-25 flat)
+            connected_players = {pid for pid, p in room.players.items() if p["connected"]}
+            no_answer_players = connected_players - set(room.answer_submissions.keys())
+
+            for player_id in no_answer_players:
+                room.players[player_id]["score"] -= 25
+                scoring_results.append({
+                    "player_id": player_id,
+                    "name": room.players[player_id]["name"],
+                    "answer": None,
+                    "is_correct": False,
+                    "position": None,
+                    "multiplier": None,
+                    "points": -25
+                })
+
+            room.question_active = False
+            if room.timer_task:
+                room.timer_task.cancel()
+                room.timer_task = None
+
+            # Broadcast comprehensive results to all
+            await room.broadcast_to_all({
                 "type": "answer_revealed",
-                "answer": room.current_question.get("correct_answer")
+                "correct_answer": correct_answer,
+                "correct_letter": correct_letter,
+                "scoring_results": scoring_results,
+                "leaderboard": room.get_leaderboard()
             })
 
     elif msg_type == "award_points":
@@ -375,7 +449,8 @@ async def handle_host_message(room: GameRoom, data: dict):
     elif msg_type == "next_question":
         room.current_question = None
         room.question_active = False
-        room.buzzer_queue = []
+        room.answer_submissions = {}
+        room.submission_order = []
         await room.broadcast_to_all({
             "type": "question_cleared"
         })
@@ -421,7 +496,7 @@ async def run_timer(room: GameRoom):
         room.question_active = False
         await room.broadcast_to_all({
             "type": "timer_expired",
-            "buzzer_queue": room.buzzer_queue
+            "submissions_count": len(room.answer_submissions)
         })
 
 
@@ -514,34 +589,42 @@ async def handle_player_message(room: GameRoom, player_id: str, data: dict):
     msg_type = data.get("type")
 
     if msg_type == "buzz":
-        # If mini-game is active and no question, handle as mini-game buzz
+        # Mini-game buzz only (boat race)
         if not room.question_active and room.mini_game_active:
             await room.handle_mini_game_buzz(player_id)
             return
 
+    elif msg_type == "submit_answer":
+        answer = data.get("answer")  # "A", "B", "C", or "D"
+
         if room.question_active and player_id in room.players:
-            # Check if player already buzzed
-            if not any(b["player_id"] == player_id for b in room.buzzer_queue):
-                buzz_entry = {
-                    "player_id": player_id,
-                    "name": room.players[player_id]["name"],
-                    "timestamp": datetime.now().isoformat(),
-                    "position": len(room.buzzer_queue) + 1
-                }
-                room.buzzer_queue.append(buzz_entry)
+            # Check if player already submitted
+            if player_id in room.answer_submissions:
+                return  # Already answered, ignore
 
-                # Confirm buzz to player
-                await room.send_to_player(player_id, {
-                    "type": "buzz_confirmed",
-                    "position": buzz_entry["position"]
-                })
+            # Record submission with position
+            position = len(room.submission_order) + 1
+            room.answer_submissions[player_id] = {
+                "answer": answer,
+                "timestamp": datetime.now().isoformat(),
+                "position": position
+            }
+            room.submission_order.append(player_id)
 
-                # Notify host
-                await room.send_to_host({
-                    "type": "player_buzzed",
-                    "buzz": buzz_entry,
-                    "buzzer_queue": room.buzzer_queue
-                })
+            # Confirm to player
+            await room.send_to_player(player_id, {
+                "type": "answer_confirmed",
+                "position": position,
+                "answer": answer
+            })
+
+            # Update host with count only (not answers)
+            connected_count = len([p for p in room.players.values() if p["connected"]])
+            await room.send_to_host({
+                "type": "answer_count_update",
+                "count": len(room.answer_submissions),
+                "total_players": connected_count
+            })
 
 
 if __name__ == "__main__":
