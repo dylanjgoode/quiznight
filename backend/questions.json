@@ -62,8 +62,8 @@
       {
         "id": "maria1",
         "question": "¿Cuál es la comida favorita de María?",
-        "options": ["Pizza", "Carne", "Sushi", "Pasta"],
-        "correct_answer": "Carne",
+        "options": ["Pizza", "Solomillo", "Merluza", "Carbonara"],
+        "correct_answer": "Solomillo",
         "points": 100
       },
       {
@@ -76,7 +76,7 @@
       {
         "id": "maria3",
         "question": "¿Cuál es el plato favorito de María del restaurante Hanoi?",
-        "options": ["Arroz con gambas y curry", "Pho bo", "Rollitos de primavera", "Bun cha"],
+        "options": ["Arroz con gambas al curry", "Arroz con pollo al curry", "Rollitos de primavera", "Nido de pollo"],
         "correct_answer": "Arroz con gambas y curry",
         "points": 150
       },
@@ -90,7 +90,7 @@
       {
         "id": "maria5",
         "question": "¿Cuál era la frase favorita de María cuando era adolescente?",
-        "options": ["Sin Más", "Qué Pasa", "Vale Vale", "Yo Qué Sé"],
+        "options": ["Sin Más", "En plan", "Vale Vale", "Yo Qué Sé"],
         "correct_answer": "Sin Más",
         "points": 150
       },
