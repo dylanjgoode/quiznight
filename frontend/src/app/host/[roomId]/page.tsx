@@ -289,7 +289,7 @@ export default function HostGame() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-[#FFD700] text-xl mb-4">Connecting to game...</div>
+          <div className="text-[#FFD700] text-xl mb-4">Conectando al juego...</div>
           <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full mx-auto"></div>
         </div>
       </div>
@@ -310,29 +310,29 @@ export default function HostGame() {
             <button
               onClick={() => window.location.href = '/'}
               className="text-gray-400 hover:text-[#FFD700] transition-colors"
-              title="Back to Home"
+              title="Volver al inicio"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </button>
-            <h1 className="text-2xl lg:text-3xl font-bold text-[#FFD700]">Quiz Night Host</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-[#FFD700]">Noche de Trivia - Anfitrión</h1>
           </div>
           <div className="flex items-center gap-4 mt-2">
             <span className="text-gray-400">
-              Room Code: <span className="text-[#FFD700] font-mono font-bold text-xl">{roomCode}</span>
+              Código de sala: <span className="text-[#FFD700] font-mono font-bold text-xl">{roomCode}</span>
             </span>
             <button
               onClick={copyJoinLink}
               className="text-sm bg-[#1A1A1A] border border-[#FFD700]/30 text-[#FFD700] px-3 py-1 rounded hover:bg-[#FFD700] hover:text-[#0A0A0A] transition-colors"
             >
-              Copy Link
+              Copiar enlace
             </button>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400 text-sm">Timer:</span>
+            <span className="text-gray-400 text-sm">Tiempo:</span>
             <select
               value={timerSeconds}
               onChange={(e) => updateTimer(Number(e.target.value))}
@@ -365,7 +365,7 @@ export default function HostGame() {
                   onClick={() => sendMessage({ type: 'end_mini_game' })}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                 >
-                  End Race
+                  Terminar carrera
                 </button>
               </div>
             </div>
@@ -374,15 +374,15 @@ export default function HostGame() {
           {!currentQuestion && (
             <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
               <h2 className="text-xl font-semibold text-[#FFD700] mb-4">
-                {currentCategory ? currentCategory : 'Select Category'}
+                {currentCategory ? currentCategory : 'Seleccionar categoría'}
               </h2>
 
               {/* Question Progress Bar */}
               {currentCategory && categoryQuestions.length > 0 && (
                 <div className="mb-6">
                   <div className="flex justify-between text-sm text-gray-400 mb-2">
-                    <span>Progress</span>
-                    <span>Question {questionIndex + 1} of {categoryQuestions.length}</span>
+                    <span>Progreso</span>
+                    <span>Pregunta {questionIndex + 1} de {categoryQuestions.length}</span>
                   </div>
                   <div className="h-3 bg-[#0A0A0A] rounded-full overflow-hidden">
                     <div
@@ -420,11 +420,11 @@ export default function HostGame() {
               </div>
               {currentCategory && hasMoreQuestions && (
                 <button onClick={startQuestion} className="btn-gold text-lg px-8">
-                  Start Question
+                  Empezar pregunta
                 </button>
               )}
               {currentCategory && !hasMoreQuestions && (
-                <p className="text-gray-400">No more questions in this category!</p>
+                <p className="text-gray-400">¡No hay más preguntas en esta categoría!</p>
               )}
             </div>
           )}

@@ -16,11 +16,11 @@ export default function BoatRace({ positions, winners, currentPlayerId, isHost =
     <div className={`bg-gradient-to-b from-[#1a3a5c] to-[#0d1f33] rounded-2xl p-4 ${isHost ? 'p-6' : ''}`}>
       {/* Header */}
       <div className="text-center mb-4">
-        <h3 className="text-[#FFD700] font-bold text-lg">Boat Race!</h3>
-        <p className="text-gray-400 text-sm">Tap the button to row across the river</p>
+        <h3 className="text-[#FFD700] font-bold text-lg">¡Carrera de botes!</h3>
+        <p className="text-gray-400 text-sm">Pulsa el botón para remar y cruzar el río</p>
         {winners.length > 0 && (
           <p className="text-green-400 text-xs mt-1">
-            {winners.length === 1 ? '1 winner!' : `${winners.length} winners!`} First 2 get +50 bonus
+            {winners.length === 1 ? '1 ganador!' : `${winners.length} ganadores!`} Los 2 primeros obtienen +50 puntos
           </p>
         )}
       </div>
@@ -43,7 +43,7 @@ export default function BoatRace({ positions, winners, currentPlayerId, isHost =
         <div className={`py-4 space-y-2 ${isHost ? 'min-h-[200px]' : 'min-h-[150px]'}`}>
           {sortedPlayers.length === 0 ? (
             <div className="text-center text-gray-400 py-8">
-              Waiting for players to join...
+              Esperando jugadores...
             </div>
           ) : (
             sortedPlayers.map(([playerId, data]) => {
@@ -94,11 +94,11 @@ export default function BoatRace({ positions, winners, currentPlayerId, isHost =
         <div className="mt-3 text-center">
           {positions[currentPlayerId]?.finished ? (
             <p className="text-green-400 font-bold">
-              {winners.indexOf(currentPlayerId) < 2 ? '🎉 You won +50 bonus points!' : '✓ You crossed the finish line!'}
+              {winners.indexOf(currentPlayerId) < 2 ? '🎉 ¡Ganaste +50 puntos de bonificación!' : '✓ ¡Cruzaste la línea de meta!'}
             </p>
           ) : (
             <p className="text-gray-400 text-sm animate-pulse">
-              ⬇️ Tap the button below to row! ⬇️
+              ⬇️ ¡Pulsa el botón para remar! ⬇️
             </p>
           )}
         </div>

@@ -7,8 +7,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Quiz Night - New Year's Eve Edition",
-  description: "Real-time multiplayer quiz game with buzzer - perfect for New Year's Eve parties!",
+  title: "Noche de Trivia - Edición Año Nuevo",
+  description: "Juego de trivia multijugador en tiempo real con pulsador - ¡perfecto para fiestas de Año Nuevo!",
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${inter.className} antialiased min-h-screen`}>
         {children}
       </body>

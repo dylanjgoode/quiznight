@@ -80,17 +80,17 @@ export default function QuestionCard({
     <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
       <div className="flex items-start justify-between mb-4">
         <span className="bg-[#FFD700]/20 text-[#FFD700] px-3 py-1 rounded-full text-sm">
-          {question.points} points
+          {question.points} puntos
         </span>
         <div className="flex gap-2">
           {isMusicQuestion && (
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm">
-              Music Round
+              Ronda musical
             </span>
           )}
           {buzzerActive && (
             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm animate-pulse">
-              Buzzer Active
+              Pulsador activo
             </span>
           )}
         </div>
@@ -166,7 +166,7 @@ export default function QuestionCard({
             onClick={onStop}
             className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg transition-colors"
           >
-            Stop Timer
+            Detener tiempo
           </button>
         )}
         {!answerRevealed && (
@@ -174,12 +174,12 @@ export default function QuestionCard({
             onClick={onReveal}
             className="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
           >
-            Reveal Answer
+            Revelar respuesta
           </button>
         )}
         {answerRevealed && (
           <button onClick={onNext} className="btn-gold">
-            Next Question →
+            Siguiente pregunta →
           </button>
         )}
       </div>

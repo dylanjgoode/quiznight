@@ -25,10 +25,10 @@ export default function JoinGame() {
           const data = await response.json();
           setRoomInfo(data);
         } else {
-          setError('Room not found. Check the code and try again.');
+          setError('Sala no encontrada. Revisa el código e inténtalo de nuevo.');
         }
       } catch (err) {
-        setError('Unable to connect to server.');
+        setError('No se puede conectar al servidor.');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -40,7 +40,7 @@ export default function JoinGame() {
 
   const joinGame = () => {
     if (!playerName.trim()) {
-      setError('Please enter your name');
+      setError('Por favor, introduce tu nombre');
       return;
     }
 
@@ -51,7 +51,7 @@ export default function JoinGame() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-[#FFD700] text-xl">Looking for room...</div>
+        <div className="text-[#FFD700] text-xl">Buscando sala...</div>
       </div>
     );
   }
@@ -62,26 +62,26 @@ export default function JoinGame() {
 
       <div className="w-full max-w-md bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-8 border border-[#FFD700]/30 shadow-lg relative z-10">
         <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-[#FFD700] to-[#FFEC8B] bg-clip-text text-transparent">
-          Join Quiz Night
+          Unirse a Noche de Trivia
         </h1>
 
         {roomInfo && (
           <div className="text-center mb-6">
             <p className="text-gray-400">
-              Hosted by <span className="text-[#FFD700]">{roomInfo.host_name}</span>
+              Organizado por <span className="text-[#FFD700]">{roomInfo.host_name}</span>
             </p>
             <p className="text-gray-500 text-sm">
-              {roomInfo.player_count} player{roomInfo.player_count !== 1 ? 's' : ''} joined
+              {roomInfo.player_count} jugador{roomInfo.player_count !== 1 ? 'es' : ''} conectado{roomInfo.player_count !== 1 ? 's' : ''}
             </p>
           </div>
         )}
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Your Name</label>
+            <label className="block text-sm text-gray-400 mb-2">Tu nombre</label>
             <input
               type="text"
-              placeholder="Enter your name"
+              placeholder="Introduce tu nombre"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && joinGame()}
@@ -96,7 +96,7 @@ export default function JoinGame() {
             disabled={isJoining || !roomInfo}
             className="w-full btn-gold text-lg py-4"
           >
-            {isJoining ? 'Joining...' : 'Join Game'}
+            {isJoining ? 'Uniéndose...' : 'Unirse'}
           </button>
         </div>
 
@@ -108,7 +108,7 @@ export default function JoinGame() {
           onClick={() => router.push('/')}
           className="mt-6 w-full text-gray-400 hover:text-[#FFD700] transition-colors text-sm"
         >
-          ← Back to Home
+          ← Volver al inicio
         </button>
       </div>
     </div>

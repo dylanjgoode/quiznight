@@ -46,7 +46,7 @@
       {
         "id": "his7",
         "question": "¿Cuál mató a más gente en España?",
-        "options": ["La Inquisición Española", "Los Juicios de Brujas", "La Peste Negra", "Las Guerras Napoleónicas"],
+        "options": ["La Inquisición Española", "Los Juicios de Brujas", "El Motín de Aranjuez", "La Conspiración de la Pólvora"],
         "correct_answer": "Los Juicios de Brujas",
         "points": 200
       },

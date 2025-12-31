@@ -254,11 +254,11 @@ export default function PlayerGame() {
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-center">
           <div className="text-[#FFD700] text-xl mb-4">
-            {reconnectCount > 0 ? 'Reconnecting...' : 'Connecting to game...'}
+            {reconnectCount > 0 ? 'Reconectando...' : 'Conectando al juego...'}
           </div>
           <div className="animate-spin w-8 h-8 border-4 border-[#FFD700] border-t-transparent rounded-full mx-auto"></div>
           {reconnectCount > 0 && (
-            <p className="text-gray-500 text-sm mt-4">Attempt {reconnectCount}/5</p>
+            <p className="text-gray-500 text-sm mt-4">Intento {reconnectCount}/5</p>
           )}
         </div>
       </div>
@@ -273,7 +273,7 @@ export default function PlayerGame() {
             <button
               onClick={() => window.location.href = '/'}
               className="text-gray-400 hover:text-[#FFD700] transition-colors"
-              title="Back to Home"
+              title="Volver al inicio"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -281,12 +281,12 @@ export default function PlayerGame() {
             </button>
             <div>
               <h1 className="text-xl font-bold text-[#FFD700]">{playerName}</h1>
-              <p className="text-gray-400 text-sm">Position #{position}</p>
+              <p className="text-gray-400 text-sm">Posición #{position}</p>
             </div>
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-[#FFD700]">{score}</div>
-            <p className="text-gray-400 text-sm">points</p>
+            <p className="text-gray-400 text-sm">puntos</p>
           </div>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default function PlayerGame() {
             pointsReceived > 0 ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
           }`}
         >
-          {pointsReceived > 0 ? '+' : ''}{pointsReceived} points!
+          {pointsReceived > 0 ? '+' : ''}{pointsReceived} puntos!
         </div>
       )}
 
@@ -329,7 +329,7 @@ export default function PlayerGame() {
         {/* Answer Selection UI */}
         {questionActive && !answerLocked && (
           <div className="w-full max-w-sm">
-            <p className="text-center text-gray-400 mb-4 text-sm">Look at the big screen!</p>
+            <p className="text-center text-gray-400 mb-4 text-sm">¡Mira la pantalla grande!</p>
             <div className="grid grid-cols-2 gap-4">
               {['A', 'B', 'C', 'D'].map((letter) => (
                 <button
@@ -355,9 +355,9 @@ export default function PlayerGame() {
             <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-[#FFD700] to-[#DAA520] text-[#0A0A0A] font-bold text-5xl flex items-center justify-center mb-4">
               {selectedAnswer}
             </div>
-            <p className="text-[#FFD700] text-xl font-semibold">Answer locked!</p>
+            <p className="text-[#FFD700] text-xl font-semibold">¡Respuesta bloqueada!</p>
             <p className="text-gray-400 mt-2">
-              {answerPosition === 1 ? 'First to answer!' : `Position #${answerPosition}`}
+              {answerPosition === 1 ? '¡Primero en responder!' : `Posición #${answerPosition}`}
             </p>
           </div>
         )}
@@ -371,15 +371,15 @@ export default function PlayerGame() {
               {scoringResult.is_correct ? '✓' : '✗'}
             </div>
             {scoringResult.answer && (
-              <p className="text-gray-300 mb-2">You answered: {scoringResult.answer}</p>
+              <p className="text-gray-300 mb-2">Tu respuesta: {scoringResult.answer}</p>
             )}
             {!scoringResult.answer && (
-              <p className="text-gray-400 mb-2">No answer submitted</p>
+              <p className="text-gray-400 mb-2">Sin respuesta</p>
             )}
             <p className={`text-3xl font-bold ${
               scoringResult.points > 0 ? 'text-green-400' : 'text-red-400'
             }`}>
-              {scoringResult.points > 0 ? '+' : ''}{scoringResult.points} points
+              {scoringResult.points > 0 ? '+' : ''}{scoringResult.points} puntos
             </p>
           </div>
         )}
@@ -404,12 +404,12 @@ export default function PlayerGame() {
                 {hasFinishedRace ? (
                   <div className="flex flex-col items-center">
                     <span className="text-5xl mb-2">🏁</span>
-                    <span className="text-xl">Finished!</span>
+                    <span className="text-xl">¡Terminado!</span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
                     <span className="text-5xl mb-2">🚣</span>
-                    <span>ROW!</span>
+                    <span>¡REMA!</span>
                   </div>
                 )}
               </button>
@@ -419,21 +419,21 @@ export default function PlayerGame() {
           return (
             <div className="text-center">
               <div className="text-6xl mb-4">⏳</div>
-              <p className="text-gray-400 text-xl">Waiting for next question...</p>
+              <p className="text-gray-400 text-xl">Esperando la siguiente pregunta...</p>
             </div>
           );
         })()}
 
         <p className="mt-8 text-gray-400 text-center text-sm">
           {questionActive && !answerLocked
-            ? 'Tap an answer or press A/B/C/D!'
+            ? '¡Toca una respuesta o pulsa A/B/C/D!'
             : answerLocked && !scoringResult
-            ? 'Waiting for the host to reveal...'
+            ? 'Esperando a que el anfitrión revele...'
             : scoringResult
-            ? 'Get ready for the next question!'
+            ? '¡Prepárate para la siguiente pregunta!'
             : miniGameActive && !questionActive
-            ? 'Spam the button to row your boat!'
-            : 'Watch the host screen!'}
+            ? '¡Dale al botón para remar!'
+            : '¡Mira la pantalla del anfitrión!'}
         </p>
       </div>
 
@@ -442,7 +442,7 @@ export default function PlayerGame() {
           onClick={() => setShowLeaderboard(!showLeaderboard)}
           className="w-full py-3 bg-[#0A0A0A] border border-[#FFD700]/30 text-[#FFD700] rounded-lg"
         >
-          {showLeaderboard ? 'Hide Leaderboard' : 'Show Leaderboard'}
+          {showLeaderboard ? 'Ocultar clasificación' : 'Ver clasificación'}
         </button>
       </div>
 
@@ -450,7 +450,7 @@ export default function PlayerGame() {
         <div className="fixed inset-0 bg-black/80 z-40 flex items-end">
           <div className="w-full max-h-[70vh] overflow-y-auto bg-[#1A1A1A] rounded-t-2xl p-4 animate-slide-up">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#FFD700]">Leaderboard</h2>
+              <h2 className="text-xl font-bold text-[#FFD700]">Clasificación</h2>
               <button
                 onClick={() => setShowLeaderboard(false)}
                 className="text-gray-400 hover:text-white"
@@ -470,7 +470,7 @@ export default function PlayerGame() {
         className={`fixed bottom-4 right-4 w-3 h-3 rounded-full ${
           isConnected ? 'bg-green-500' : 'bg-red-500'
         }`}
-        title={isConnected ? 'Connected' : 'Disconnected'}
+        title={isConnected ? 'Conectado' : 'Desconectado'}
       />
     </div>
   );

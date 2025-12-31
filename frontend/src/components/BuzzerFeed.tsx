@@ -37,7 +37,7 @@ export default function BuzzerFeed({
   return (
     <div className="bg-[#1A1A1A]/80 rounded-xl p-6 border border-[#FFD700]/30">
       <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
-        <span>📝</span> Answers
+        <span>📝</span> Respuestas
       </h2>
 
       {!answerRevealed ? (
@@ -46,7 +46,7 @@ export default function BuzzerFeed({
           <div className="text-6xl font-bold text-[#FFD700] mb-2">
             {answerCount} / {totalPlayers}
           </div>
-          <p className="text-gray-400">players have answered</p>
+          <p className="text-gray-400">jugadores han respondido</p>
 
           {/* Progress bar */}
           <div className="mt-4 h-3 bg-[#0A0A0A] rounded-full overflow-hidden max-w-xs mx-auto">
@@ -57,24 +57,24 @@ export default function BuzzerFeed({
           </div>
 
           {totalPlayers > 0 && answerCount === 0 && (
-            <p className="text-gray-600 text-sm mt-4">Waiting for answers...</p>
+            <p className="text-gray-600 text-sm mt-4">Esperando respuestas...</p>
           )}
 
           {answerCount > 0 && answerCount < totalPlayers && (
             <p className="text-gray-600 text-sm mt-4">
-              Waiting for {totalPlayers - answerCount} more...
+              Esperando a {totalPlayers - answerCount} más...
             </p>
           )}
 
           {answerCount === totalPlayers && totalPlayers > 0 && (
-            <p className="text-green-400 text-sm mt-4">Everyone has answered!</p>
+            <p className="text-green-400 text-sm mt-4">¡Todos han respondido!</p>
           )}
         </div>
       ) : (
         // After reveal: show detailed results
         <div className="space-y-3">
           {sortedResults.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No answers recorded</p>
+            <p className="text-gray-500 text-center py-4">No hay respuestas registradas</p>
           ) : (
             <>
               {sortedResults.map((result) => (
@@ -111,10 +111,10 @@ export default function BuzzerFeed({
                       <span className="ml-2 text-gray-400 text-sm">
                         {result.answer ? (
                           <>
-                            answered <span className={result.answer === correctLetter ? 'text-green-400 font-bold' : 'text-red-400'}>{result.answer}</span>
+                            respondió <span className={result.answer === correctLetter ? 'text-green-400 font-bold' : 'text-red-400'}>{result.answer}</span>
                           </>
                         ) : (
-                          <span className="text-gray-500">(no answer)</span>
+                          <span className="text-gray-500">(sin respuesta)</span>
                         )}
                       </span>
                     </div>
@@ -134,19 +134,19 @@ export default function BuzzerFeed({
           {sortedResults.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-700 text-center">
               <p className="text-gray-400">
-                <span className="text-green-400">{correctCount} correct</span>
+                <span className="text-green-400">{correctCount} correcta{correctCount !== 1 ? 's' : ''}</span>
                 {' · '}
-                <span className="text-red-400">{wrongCount} wrong</span>
+                <span className="text-red-400">{wrongCount} incorrecta{wrongCount !== 1 ? 's' : ''}</span>
                 {noAnswerCount > 0 && (
                   <>
                     {' · '}
-                    <span className="text-gray-500">{noAnswerCount} no answer</span>
+                    <span className="text-gray-500">{noAnswerCount} sin respuesta</span>
                   </>
                 )}
               </p>
               {correctLetter && (
                 <p className="text-[#FFD700] mt-2">
-                  Correct answer: <span className="font-bold">{correctLetter}</span>
+                  Respuesta correcta: <span className="font-bold">{correctLetter}</span>
                 </p>
               )}
             </div>
@@ -154,7 +154,7 @@ export default function BuzzerFeed({
 
           {/* Points scale hint */}
           <p className="text-gray-600 text-xs mt-4 text-center">
-            Points scale: 1st = 100% · 2nd = 75% · 3rd = 50% · 4th+ = 25%
+            Escala de puntos: 1º = 100% · 2º = 75% · 3º = 50% · 4º+ = 25%
           </p>
         </div>
       )}

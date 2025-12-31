@@ -13,7 +13,7 @@ export default function Timer({ seconds, total }: TimerProps) {
   return (
     <div className="bg-[#1A1A1A]/80 rounded-xl p-4 border border-[#FFD700]/30">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-gray-400">Time Remaining</span>
+        <span className="text-gray-400">Tiempo restante</span>
         <span
           className={`text-3xl font-bold font-mono ${
             isCritical ? 'text-red-500 animate-pulse' : isLow ? 'text-orange-500' : 'text-[#FFD700]'

@@ -47,7 +47,7 @@ export default function Leaderboard({
   return (
     <div className="bg-[#1A1A1A]/80 rounded-xl p-4 border border-[#FFD700]/30">
       <h2 className="text-xl font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
-        <span>🏆</span> Leaderboard
+        <span>🏆</span> Clasificación
       </h2>
 
       {players.length === 0 ? (
@@ -63,8 +63,8 @@ export default function Leaderboard({
               <source src="/images/party_dog.mp4" type="video/mp4" />
             </video>
           </div>
-          <p className="text-gray-400 text-sm animate-pulse">Waiting for players to join...</p>
-          <p className="text-[#FFD700]/60 text-xs mt-2">Share the room code!</p>
+          <p className="text-gray-400 text-sm animate-pulse">Esperando jugadores...</p>
+          <p className="text-[#FFD700]/60 text-xs mt-2">¡Comparte el código de la sala!</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -87,7 +87,7 @@ export default function Leaderboard({
                 </span>
                 <span className={`font-medium ${currentPlayerId === player.id ? 'text-[#FFD700]' : 'text-white'}`}>
                   {player.name}
-                  {!player.connected && <span className="text-gray-500 text-xs ml-2">(disconnected)</span>}
+                  {!player.connected && <span className="text-gray-500 text-xs ml-2">(desconectado)</span>}
                 </span>
               </div>
 
@@ -134,7 +134,7 @@ export default function Leaderboard({
                           setEditScore(player.score.toString());
                         }}
                         className="text-gray-500 hover:text-[#FFD700] text-xs ml-2"
-                        title="Edit score"
+                        title="Editar puntuación"
                       >
                         ✏️
                       </button>

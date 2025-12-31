@@ -14,7 +14,7 @@ export default function Home() {
 
   const createRoom = async () => {
     if (!hostName.trim()) {
-      setError('Please enter your name');
+      setError('Por favor, introduce tu nombre');
       return;
     }
 
@@ -33,7 +33,7 @@ export default function Home() {
       const data = await response.json();
       router.push(`/host/${data.room_id}`);
     } catch (err) {
-      setError('Failed to create room. Make sure the server is running.');
+      setError('Error al crear la sala. Asegúrate de que el servidor esté funcionando.');
       console.error(err);
     } finally {
       setIsCreating(false);
@@ -42,7 +42,7 @@ export default function Home() {
 
   const joinRoom = () => {
     if (!roomCode.trim()) {
-      setError('Please enter a room code');
+      setError('Por favor, introduce el código de la sala');
       return;
     }
     const code = roomCode.trim().toUpperCase();
@@ -86,10 +86,10 @@ export default function Home() {
         <div className="w-full max-w-md bg-[#1A1A1A]/80 backdrop-blur-sm rounded-2xl p-8 border border-[#FFD700]/30 shadow-lg gold-glow">
           {/* Create Game Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Host a Game</h2>
+            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Crear partida</h2>
             <input
               type="text"
-              placeholder="Your name"
+              placeholder="Tu nombre"
               value={hostName}
               onChange={(e) => setHostName(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4"
@@ -100,7 +100,7 @@ export default function Home() {
               disabled={isCreating}
               className="w-full btn-gold"
             >
-              {isCreating ? 'Creating...' : 'Create Room'}
+              {isCreating ? 'Creando...' : 'Crear sala'}
             </button>
           </div>
 
@@ -109,16 +109,16 @@ export default function Home() {
               <div className="w-full border-t border-[#FFD700]/30"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-[#1A1A1A] px-4 text-gray-400">or</span>
+              <span className="bg-[#1A1A1A] px-4 text-gray-400">o</span>
             </div>
           </div>
 
           {/* Join Game Section */}
           <div>
-            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Join a Game</h2>
+            <h2 className="text-xl font-semibold text-[#FFD700] mb-4">Unirse a partida</h2>
             <input
               type="text"
-              placeholder="Room code (e.g., ABC123)"
+              placeholder="Código de sala (ej. ABC123)"
               value={roomCode}
               onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
               className="w-full px-4 py-3 rounded-lg bg-[#0A0A0A] border border-[#FFD700]/30 text-white placeholder-gray-500 mb-4 uppercase"
@@ -128,7 +128,7 @@ export default function Home() {
               onClick={joinRoom}
               className="w-full bg-transparent border-2 border-[#FFD700] text-[#FFD700] font-bold py-3 px-6 rounded-lg hover:bg-[#FFD700] hover:text-[#0A0A0A] transition-all duration-200"
             >
-              Join Room
+              Unirse
             </button>
           </div>
 

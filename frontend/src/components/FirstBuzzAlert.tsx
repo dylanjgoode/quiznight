@@ -66,7 +66,7 @@ export default function FirstBuzzAlert({ playerName, show, onComplete }: FirstBu
 
           <div className="text-6xl mb-2">🔔</div>
           <div className="text-[#0A0A0A] font-black text-3xl mb-2 tracking-wider">
-            FIRST BUZZ!
+            ¡PRIMERO!
           </div>
           <div className="text-[#0A0A0A]/80 text-2xl font-bold">
             {playerName}
